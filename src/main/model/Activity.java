@@ -1,9 +1,13 @@
 package model;
 
-// Represents an activity having its brief description, detailed description, and corresponding time (24h format)
+/*
+ * Represents an activity having its brief description, detailed description,
+ * day of occurrence, and corresponding time (24h format)
+ */
 public class Activity {
     private String briefDescription;    // the brief description of the activity
     private String detailedDescription; // the detailed description of the activity
+    private Day day;                    // the day of occurrence of the activity
     private int startTime;              // the starting time of the activity in 24h format
     private int endTime;                // the ending time of the activity in 24h format
 
@@ -14,12 +18,15 @@ public class Activity {
      *           endTime > startTime and endTime <= 24
      * EFFECTS: briefDescription of the activity is set to userBriefDescription
      *          detailedDescription of the activity is set to userDetailedDescription
+     *          day of the activity is set to userDay
      *          startTime of the activity is set to userStartTime
      *          endTime of the activity is set to userEndTime
      */
-    public Activity(String userBriefDescription, String userDetailedDescription, int userStartTime, int userEndTime) {
+    public Activity(String userBriefDescription, String userDetailedDescription,
+                    Day userDay, int userStartTime, int userEndTime) {
         briefDescription = userBriefDescription;
         detailedDescription = userDetailedDescription;
+        day = userDay;
         startTime = userStartTime;
         endTime = userEndTime;
     }
@@ -30,6 +37,10 @@ public class Activity {
 
     public String getDetailedDescription() {
         return detailedDescription;
+    }
+
+    public Day getDay() {
+        return day;
     }
 
     public int getStartTime() {
@@ -56,6 +67,15 @@ public class Activity {
      */
     public void modifyDetailedDescription(String updatedDetailedDescription) {
         detailedDescription = updatedDetailedDescription;
+    }
+
+    /*
+     * REQUIRES: time on updatedDay has no conflict
+     * MODIFIES: this
+     * EFFECTS: day is updated to updatedDay
+     */
+    public void modifyDay(Day updatedDay) {
+        day = updatedDay;
     }
 
     /*

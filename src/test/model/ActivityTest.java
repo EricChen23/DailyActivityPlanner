@@ -11,13 +11,15 @@ class ActivityTest {
     void runBefore() {
         String briefDescription = "Brief description";
         String detailedDescription = "Detailed description";
-        testActivity = new Activity(briefDescription, detailedDescription, 17, 19);
+        Day day = Day.MONDAY;
+        testActivity = new Activity(briefDescription, detailedDescription, day, 17, 19);
     }
 
     @Test
     void testConstructor() {
         assertEquals("Brief description", testActivity.getBriefDescription());
         assertEquals("Detailed description", testActivity.getDetailedDescription());
+        assertEquals(Day.MONDAY, testActivity.getDay());
         assertEquals(17, testActivity.getStartTime());
         assertEquals(19, testActivity.getEndTime());
     }
@@ -32,6 +34,12 @@ class ActivityTest {
     void testModifyDetailedDescription() {
         testActivity.modifyDetailedDescription("Modified detailed description");
         assertEquals("Modified detailed description", testActivity.getDetailedDescription());
+    }
+
+    @Test
+    void testModifyDay(){
+        testActivity.modifyDay(Day.FRIDAY);
+        assertEquals(Day.FRIDAY, testActivity.getDay());
     }
 
     @Test
