@@ -9,26 +9,27 @@ public class Activity {
     private String detailedDescription; // the detailed description of the activity
     private Day day;                    // the day of occurrence of the activity
     private int startTime;              // the starting time of the activity in 24h format
-    private int endTime;                // the ending time of the activity in 24h format
+    private int duration;                // the duration of the activity in whole hours
 
     /*
      * REQUIRES: briefDescription has a non-zero length
      *           detailedDescription has a non-zero length
-     *           startTime >= 0 and startTime <= 24
-     *           endTime > startTime and endTime <= 24
-     * EFFECTS: briefDescription of the activity is set to userBriefDescription
-     *          detailedDescription of the activity is set to userDetailedDescription
-     *          day of the activity is set to userDay
-     *          startTime of the activity is set to userStartTime
-     *          endTime of the activity is set to userEndTime
+     *           startTime >= 0 and startTime <= 23
+     *           duration > 0
+     *           startTime + duration <= 24
+     * EFFECTS: briefDescription of the activity is set to activityBriefDescription
+     *          detailedDescription of the activity is set to activityDetailedDescription
+     *          day of the activity is set to activityDay
+     *          startTime of the activity is set to activityStartTime
+     *          duration of the activity is set to activityDuration
      */
-    public Activity(String userBriefDescription, String userDetailedDescription,
-                    Day userDay, int userStartTime, int userEndTime) {
-        briefDescription = userBriefDescription;
-        detailedDescription = userDetailedDescription;
-        day = userDay;
-        startTime = userStartTime;
-        endTime = userEndTime;
+    public Activity(String activityBriefDescription, String activityDetailedDescription,
+                    Day activityDay, int activityStartTime, int activityDuration) {
+        briefDescription = activityBriefDescription;
+        detailedDescription = activityDetailedDescription;
+        day = activityDay;
+        startTime = activityStartTime;
+        duration = activityDuration;
     }
 
     public String getBriefDescription() {
@@ -47,8 +48,8 @@ public class Activity {
         return startTime;
     }
 
-    public int getEndTime() {
-        return endTime;
+    public int getDuration() {
+        return duration;
     }
 
     /*
@@ -80,7 +81,8 @@ public class Activity {
 
     /*
      * REQUIRES: updatedStartTime >= 0
-     *           updatedStartTime < endTime
+     *           updatedStartTime <= 23
+     *           updatedStartTime + duration <= 24
      * MODIFIES: this
      * EFFECTS: startTime is updated to updatedStartTime
      */
@@ -89,13 +91,12 @@ public class Activity {
     }
 
     /*
-     * REQUIRES: updatedEndTime > startTime
-     *           updatedEndTime <= 24
+     * REQUIRES: startTime + updatedDuration <= 24
      * MODIFIES: this
      * EFFECTS: endTime is updated to updatedEndTime
      */
-    public void modifyEndTime(int updatedEndTime) {
-        endTime = updatedEndTime;
+    public void modifyDuration(int updatedDuration) {
+        duration = updatedDuration;
     }
 
     /*
@@ -104,6 +105,6 @@ public class Activity {
     @Override
     public String toString() {
         return "Brief description: " + briefDescription + "\n" + "Detailed description: " + detailedDescription + "\n"
-                + "Start time: " + startTime + "\n" + "End time: " + endTime;
+                + "Day: " + day + "\n" + "Start time: " + startTime + " h\n" + "Duration: " + duration + " h\n";
     }
 }

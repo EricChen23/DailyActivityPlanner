@@ -11,7 +11,7 @@ class ActivityTest {
     void runBefore() {
         String briefDescription = "Brief description";
         String detailedDescription = "Detailed description";
-        Day day = Day.MONDAY;
+        Day day = Day.MON;
         testActivity = new Activity(briefDescription, detailedDescription, day, 17, 19);
     }
 
@@ -19,9 +19,9 @@ class ActivityTest {
     void testConstructor() {
         assertEquals("Brief description", testActivity.getBriefDescription());
         assertEquals("Detailed description", testActivity.getDetailedDescription());
-        assertEquals(Day.MONDAY, testActivity.getDay());
+        assertEquals(Day.MON, testActivity.getDay());
         assertEquals(17, testActivity.getStartTime());
-        assertEquals(19, testActivity.getEndTime());
+        assertEquals(19, testActivity.getDuration());
     }
 
     @Test
@@ -38,8 +38,8 @@ class ActivityTest {
 
     @Test
     void testModifyDay(){
-        testActivity.modifyDay(Day.FRIDAY);
-        assertEquals(Day.FRIDAY, testActivity.getDay());
+        testActivity.modifyDay(Day.FRI);
+        assertEquals(Day.FRI, testActivity.getDay());
     }
 
     @Test
@@ -49,8 +49,18 @@ class ActivityTest {
     }
 
     @Test
-    void testModifyEndTime() {
-        testActivity.modifyEndTime(16);
-        assertEquals(16, testActivity.getEndTime());
+    void testModifyDuration() {
+        testActivity.modifyDuration(16);
+        assertEquals(16, testActivity.getDuration());
+    }
+
+    @Test
+    void testToString() {
+        String expectedOutput = "Brief description: " + testActivity.getBriefDescription() + "\n"
+                                + "Detailed description: " + testActivity.getDetailedDescription() + "\n"
+                                + "Day: " + testActivity.getDay() +  "\n"
+                                + "Start time: " + testActivity.getStartTime() + " h\n"
+                                + "Duration: " + testActivity.getDuration() + " h\n";
+        assertEquals(expectedOutput, testActivity.toString());
     }
 }
