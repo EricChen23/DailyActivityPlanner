@@ -57,7 +57,7 @@ public class Activity {
      * MODIFIES: this
      * EFFECTS: briefDescription is updated to updatedBriefDescription
      */
-    public void modifyBriefDescription(String updatedBriefDescription) {
+    public void setBriefDescription(String updatedBriefDescription) {
         briefDescription = updatedBriefDescription;
     }
 
@@ -66,7 +66,7 @@ public class Activity {
      * MODIFIES: this
      * EFFECTS: detailedDescription is updated to updatedDetailedDescription
      */
-    public void modifyDetailedDescription(String updatedDetailedDescription) {
+    public void setDetailedDescription(String updatedDetailedDescription) {
         detailedDescription = updatedDetailedDescription;
     }
 
@@ -75,7 +75,7 @@ public class Activity {
      * MODIFIES: this
      * EFFECTS: day is updated to updatedDay
      */
-    public void modifyDay(Day updatedDay) {
+    public void setDay(Day updatedDay) {
         day = updatedDay;
     }
 
@@ -86,7 +86,7 @@ public class Activity {
      * MODIFIES: this
      * EFFECTS: startTime is updated to updatedStartTime
      */
-    public void modifyStartTime(int updatedStartTime) {
+    public void setStartTime(int updatedStartTime) {
         startTime = updatedStartTime;
     }
 
@@ -95,7 +95,7 @@ public class Activity {
      * MODIFIES: this
      * EFFECTS: endTime is updated to updatedEndTime
      */
-    public void modifyDuration(int updatedDuration) {
+    public void setDuration(int updatedDuration) {
         duration = updatedDuration;
     }
 

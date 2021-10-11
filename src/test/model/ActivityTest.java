@@ -26,31 +26,31 @@ class ActivityTest {
 
     @Test
     void testModifyBriefDescription() {
-        testActivity.modifyBriefDescription("Modified brief description");
+        testActivity.setBriefDescription("Modified brief description");
         assertEquals("Modified brief description", testActivity.getBriefDescription());
     }
 
     @Test
     void testModifyDetailedDescription() {
-        testActivity.modifyDetailedDescription("Modified detailed description");
+        testActivity.setDetailedDescription("Modified detailed description");
         assertEquals("Modified detailed description", testActivity.getDetailedDescription());
     }
 
     @Test
     void testModifyDay(){
-        testActivity.modifyDay(Day.FRI);
+        testActivity.setDay(Day.FRI);
         assertEquals(Day.FRI, testActivity.getDay());
     }
 
     @Test
     void testModifyStartTime() {
-        testActivity.modifyStartTime(4);
+        testActivity.setStartTime(4);
         assertEquals(4, testActivity.getStartTime());
     }
 
     @Test
     void testModifyDuration() {
-        testActivity.modifyDuration(16);
+        testActivity.setDuration(16);
         assertEquals(16, testActivity.getDuration());
     }
 

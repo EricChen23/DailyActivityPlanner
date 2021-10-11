@@ -36,6 +36,10 @@ public class ActivityPlanner {
         return name;
     }
 
+    public void setName(String newName) {
+        name = newName;
+    }
+
     /* REQUIRES: newActivity is not null
      * MODIFIES:
      */
@@ -101,6 +105,74 @@ public class ActivityPlanner {
             }
         }
         return true;
+    }
+
+    public void deleteActivity(int activityIndex) {
+        activities.remove(activityIndex - 1);
+        numActivities--;
+    }
+
+    public void setActivityBriefDescription(int activityIndex, String newBriefDescription) {
+        activities.get(activityIndex - 1).setBriefDescription(newBriefDescription);
+    }
+
+    public void setActivityDetailedDescription(int activityIndex, String newDetailedDescription) {
+        activities.get(activityIndex - 1).setDetailedDescription(newDetailedDescription);
+    }
+
+    public boolean setActivityDay(int activityIndex, Day newDay) {
+        Activity toBeChanged = activities.get(activityIndex - 1);
+        int duration = toBeChanged.getDuration();
+        int startTime = toBeChanged.getStartTime();
+        Day currDay = toBeChanged.getDay();
+        for (int i = 0; i < duration; i++) {
+            activityPlannerTable[startTime + i][currDay.ordinal()] = null;
+        }
+        toBeChanged.setDay(newDay);
+        if (noConflict(toBeChanged)) {
+            activities.remove(activityIndex - 1);
+            numActivities--;
+            return addActivity(toBeChanged);
+        } else {
+            toBeChanged.setDay(currDay);
+            return false;
+        }
+    }
+
+    public boolean setStartTime(int activityIndex, int newStartTime) {
+        Activity toBeChanged = activities.get(activityIndex - 1);
+        int oldStartTime = toBeChanged.getStartTime();
+        int duration = toBeChanged.getDuration();
+        for (int i = 0; i < duration; i++) {
+            activityPlannerTable[oldStartTime + i][toBeChanged.getDay().ordinal()] = null;
+        }
+        toBeChanged.setStartTime(newStartTime);
+        if (noConflict(toBeChanged)) {
+            activities.remove(activityIndex - 1);
+            numActivities--;
+            return addActivity(toBeChanged);
+        } else {
+            toBeChanged.setStartTime(oldStartTime);
+            return false;
+        }
+    }
+
+    public boolean setDuration(int activityIndex, int newDuration) {
+        Activity toBeChanged = activities.get(activityIndex - 1);
+        int startTime = toBeChanged.getStartTime();
+        int oldDuration = toBeChanged.getDuration();
+        for (int i = 0; i < oldDuration; i++) {
+            activityPlannerTable[startTime + i][toBeChanged.getDay().ordinal()] = null;
+        }
+        toBeChanged.setDuration(newDuration);
+        if (noConflict(toBeChanged)) {
+            activities.remove(activityIndex - 1);
+            numActivities--;
+            return addActivity(toBeChanged);
+        } else {
+            toBeChanged.setDuration(oldDuration);
+            return false;
+        }
     }
 
     public String viewActivityDetailedDescription(int activityNumber) {
