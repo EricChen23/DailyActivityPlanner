@@ -1,7 +1,7 @@
 
 # Daily Activity Planner
 
-The designer of this application **used to be** very good at procrastinating and forgetting things. Now, he is reformed and wants to help others reform too. This is an application that keeps track of a user's schedule in a weekly view. The purpose of this application is to prevent users from forgetting plans and to organize their lives better. 
+The designer of this application **used to be** very good at procrastinating and forgetting things. His life was a mess. Now, he is reformed and wants to help others reform too. This is an application that keeps track of a user's schedule in a weekly view. It displays the activities on a table. The purpose of this application is to prevent users from forgetting plans and to organize their lives better. 
 
 ### User Stories
 
