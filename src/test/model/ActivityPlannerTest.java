@@ -202,11 +202,20 @@ public class ActivityPlannerTest {
         assertTrue(successfullyAddedOne);
         assertTrue(successfullyAddedTwo);
         assertTrue(successfullyUpdated);
+        successfullyUpdated = testPlanner.setStartTime(2, -1);
+        assertFalse(successfullyUpdated);
+        successfullyUpdated = testPlanner.setStartTime(2, 24);
+        assertFalse(successfullyUpdated);
         assertEquals(7, testPlanner.getActivityStartTime(2));
         successfullyUpdated = testPlanner.setActivityDay(2, Day.MON);
         assertTrue(successfullyUpdated);
         assertEquals(7, testPlanner.getActivityStartTime(1));
         successfullyUpdated = testPlanner.setStartTime(1, 8);
+        assertFalse(successfullyUpdated);
+        Activity activityOnWed = new Activity("N/A", "N/A", Day.WED, 6, 10);
+        boolean successfullyAddedThree = testPlanner.addActivity(activityOnWed);
+        assertTrue(successfullyAddedThree);
+        successfullyUpdated = testPlanner.setStartTime(3, 15);
         assertFalse(successfullyUpdated);
     }
 
@@ -216,7 +225,13 @@ public class ActivityPlannerTest {
         boolean successfullyAddedTwo = testPlanner.addActivity(activityTueEightNine);
         assertTrue(successfullyAddedOne);
         assertTrue(successfullyAddedTwo);
-        boolean successfullyUpdated = testPlanner.setDuration(1, 5);
+        boolean successfullyUpdated = testPlanner.setDuration(1, -1);
+        assertFalse(successfullyUpdated);
+        successfullyUpdated = testPlanner.setDuration(1, 25);
+        assertFalse(successfullyUpdated);
+        successfullyUpdated = testPlanner.setDuration(1, 17);
+        assertFalse(successfullyUpdated);
+        successfullyUpdated = testPlanner.setDuration(1, 5);
         assertTrue(successfullyUpdated);
         assertEquals(5, testPlanner.getActivityDuration(1));
         successfullyUpdated = testPlanner.setStartTime(1, 9);
