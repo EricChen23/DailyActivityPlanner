@@ -2,28 +2,26 @@ package ui;
 
 import model.Activity;
 import model.ActivityPlanner;
-
-
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import model.ActivityPlannerBook;
 import model.Day;
+import java.util.Scanner;
 
-// Reference to Teller App
+// Reference to Teller App Console
 // Activity planner application
 public class ActivityPlannerConsole {
-    public static final int MAX_PLANNERS_NUMBER = 3;
-    int numPlanners;
-    ArrayList<ActivityPlanner> activityPlanners;
-
+    ActivityPlannerBook activityPlannerBook;
     private Scanner input;
 
 
-    // EFFECTS: runs the teller application
+    // EFFECTS: runs the ActivityPlanner application
     public ActivityPlannerConsole() {
         runActivityPlannerConsole();
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: processes user input on the main menu (regarding planners)
+     */
     private void runActivityPlannerConsole() {
         boolean keepGoing = true;
         String command;
@@ -42,12 +40,41 @@ public class ActivityPlannerConsole {
         }
     }
 
-    private void init() {
-        numPlanners = 0;
-        activityPlanners = new ArrayList<>();
-        input = new Scanner(System.in);
+    /*
+     * MODIFIES: this
+     * EFFECTS: processes user command on the main menu (regarding planners)
+     */
+    private void processPlannerCommand(String command) {
+        switch (command) {
+            case "n":
+                createPlanner();
+                break;
+            case "c":
+                choosePlannerPrompt();
+                break;
+            case "ch":
+                changePlannerNamePrompt();
+                break;
+            case "d":
+                deletePlannerPrompt();
+                break;
+        }
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: initialize activity planner book
+     */
+    private void init() {
+        input = new Scanner(System.in);
+        System.out.println("Whats your first name?");
+        activityPlannerBook = new ActivityPlannerBook(input.next());
+    }
+
+    /*
+     * MODIFIES: this
+     * EFFECTS: processes user input on the secondary menu (regarding activities)
+     */
     private void runPlannerPrompt(int plannerNumber) {
         boolean keepGoing = true;
         String command;
@@ -64,24 +91,10 @@ public class ActivityPlannerConsole {
         }
     }
 
-    private void processPlannerCommand(String command) {
-        switch (command) {
-            case "n":
-                createPlannerPrompt();
-                break;
-            case "c":
-                choosePlannerPrompt();
-                break;
-            case "ch":
-                changePlannerNamePrompt();
-                break;
-            case "d":
-                deletePlannerPrompt();
-                break;
-        }
-    }
-
-
+    /*
+     * MODIFIES: this
+     * EFFECTS: processes user command on the secondary menu (regarding activities)
+     */
     private void processActivityCommand(String command, int plannerNumber) {
         if (command.equals("a")) {
             addActivity(plannerNumber);
@@ -102,6 +115,7 @@ public class ActivityPlannerConsole {
         }
     }
 
+    // EFFECTS: displays menu of options to user on the main menu (regarding planners)
     private void displayPlannerMenu() {
         System.out.println("\nSelect from: ");
         System.out.println("\tn -> create a new activity planner");
@@ -111,8 +125,9 @@ public class ActivityPlannerConsole {
         System.out.println("\tq -> quit");
     }
 
+    // EFFECTS: displays menu of options to user on the secondary menu (regarding activities)
     private void displayActivityMenu(int plannerNumber) {
-        System.out.println("\n" + activityPlanners.get(plannerNumber - 1).getName() + " ----Select from: ");
+        System.out.println("\n" + activityPlannerBook.getPlannerName(plannerNumber) + " ----Select from: ");
         System.out.println("\ta -> add activity");
         System.out.println("\td -> delete activity");
         System.out.println("\tmbd -> modify brief description of the activity");
@@ -124,124 +139,128 @@ public class ActivityPlannerConsole {
         System.out.println("\tb -> back to main menu");
     }
 
+    // EFFECTS: displays the planner names
     private void displayPlannerNames() {
-        int index = 1;
-        for (ActivityPlanner activityPlanner: activityPlanners) {
-            if (activityPlanner != null) {
-                System.out.print("Planner " + index + ": ");
-                System.out.print(activityPlanner.getName() + "; \t");
-                index++;
-            }
+        for (int i = 1; i <= activityPlannerBook.getNumPlanners(); i++) {
+            System.out.print("Planner " + i + ": ");
+            System.out.print(activityPlannerBook.getPlannerName(i) + "; \t");
         }
     }
 
-    private void createPlannerPrompt() {
-        if (numPlanners < MAX_PLANNERS_NUMBER) {
-            createPlanner();
+    /*
+     * MODIFIES: this
+     * EFFECTS: prompts the user to create a new planner
+     */
+    private void createPlanner() {
+        if (activityPlannerBook.hasAvailableSpot()) {
+            String plannerName;
+            System.out.println("Enter the name of the new activity planner: (planner name cannot be empty)");
+            plannerName = input.next();
+            activityPlannerBook.createNewPlanner(plannerName);
+            System.out.println("\n*" + plannerName + " is successfully created*");
         } else {
             System.out.println("\nExceeded max number of planners. Please delete or modify an existing planner.");
         }
     }
 
-    private void createPlanner() {
-        String plannerName;
-        System.out.print("Enter the name of the new activity planner: ");
-        plannerName = input.next();
-        if (plannerName.length() == 0) {
-            plannerName = "Planner " + (numPlanners + 1);
-        }
-        ActivityPlanner newPlanner = new ActivityPlanner(plannerName);
-        activityPlanners.add(newPlanner);
-        numPlanners++;
-        System.out.println("\n*" + plannerName + " is successfully created*");
-    }
-
+    /*
+     * MODIFIES: this
+     * EFFECTS: prompts the user to change the name of the selected planner
+     */
     private void changePlannerName(int plannerNumber) {
-        ActivityPlanner activityPlanner = activityPlanners.get(plannerNumber - 1);
-        System.out.println("\nPlanner to be changed: " + activityPlanner.getName());
-        System.out.println("Enter the new name of this planner: ");
+        System.out.println("\nPlanner to be changed: " + activityPlannerBook.getPlannerName(plannerNumber));
+        System.out.println("Enter the new name of this planner: (planner name cannot be empty)");
         String plannerName;
         plannerName = input.next();
-        if (plannerName.length() == 0) {
-            plannerName = "Planner " + (numPlanners + 1);
-        }
-        activityPlanner.setName(plannerName);
-        System.out.println("Planner name has been updated to: " + activityPlanner.getName());
+        activityPlannerBook.changePlannerName(plannerNumber, plannerName);
+        System.out.println("Planner name has been updated to: " + activityPlannerBook.getPlannerName(plannerNumber));
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: prompts the user to select the planner for name change
+     */
     private void changePlannerNamePrompt() {
-        if (numPlanners == 0) {
+        if (activityPlannerBook.getNumPlanners() == 0) {
             System.out.println("\nThere are no existing planners. ");
         } else {
             displayPlannerNames();
-            System.out.print("\nPlease enter the planner number for name change: ");
-            if (input.hasNextInt()) {
-                int plannerNumber = input.nextInt();
-                if (plannerNumber > 0 && plannerNumber <= numPlanners) {
-                    if (activityPlanners.get(plannerNumber - 1) == null) {
-                        System.out.println("Invalid input. ");
-                    } else {
-                        changePlannerName(plannerNumber);
-                    }
+            System.out.println("\nPlease enter the planner number for name change: ");
+            String inputStr = input.next();
+            try {
+                int plannerNumber = Integer.parseInt(inputStr);
+                if (activityPlannerBook.indexIsValid(plannerNumber)) {
+                    changePlannerName(plannerNumber);
                 } else {
                     System.out.println("Invalid input. ");
+                    System.out.println();
                 }
-            } else {
+            } catch (NumberFormatException e) {
                 System.out.println("Invalid input. ");
+                System.out.println();
             }
         }
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: prompts the user to choose one of the existing planners for further actions
+     */
     private void choosePlannerPrompt() {
-        if (numPlanners == 0) {
+        if (activityPlannerBook.isEmpty()) {
             System.out.println("\nThere are no existing planners. ");
         } else {
             displayPlannerNames();
-            System.out.print("\nPlease enter the planner number: ");
-            if (input.hasNextInt()) {
-                int plannerNumber = input.nextInt();
-                if (plannerNumber > 0 && plannerNumber <= numPlanners) {
-                    if (activityPlanners.get(plannerNumber - 1) == null) {
-                        System.out.println("Invalid input. ");
-                    } else {
-                        runPlannerPrompt(plannerNumber);
-                    }
+            System.out.println("\nPlease enter the planner number: ");
+            String inputStr = input.next();
+            try {
+                int plannerNumber = Integer.parseInt(inputStr);
+                if (activityPlannerBook.indexIsValid(plannerNumber)) {
+                    runPlannerPrompt(plannerNumber);
                 } else {
                     System.out.println("Invalid input. ");
+                    System.out.println();
                 }
-            } else {
+            } catch (NumberFormatException e) {
                 System.out.println("Invalid input. ");
+                System.out.println();
             }
         }
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: prompts the user to delete one of the existing planners
+     */
     private void deletePlannerPrompt() {
-        if (numPlanners == 0) {
+        if (activityPlannerBook.isEmpty()) {
             System.out.print("\nThere are no existing planners." + "\n");
         } else {
             displayPlannerNames();
-            System.out.print("\nPlease enter the planner number to be deleted: ");
-            if (input.hasNextInt()) {
-                int plannerNumber = input.nextInt();
-                if (plannerNumber > 0 && plannerNumber <= numPlanners) {
-                    deletePlanner(plannerNumber);
+            System.out.println("\nPlease enter the planner number to be deleted: ");
+            String inputStr = input.next();
+            try {
+                int plannerNumber = Integer.parseInt(inputStr);
+                if (activityPlannerBook.indexIsValid(plannerNumber)) {
+                    String removedPlanner = activityPlannerBook.getPlannerName(plannerNumber);
+                    activityPlannerBook.deletePlanner(plannerNumber);
+                    System.out.println("\n*" + removedPlanner + " has been deleted.*");
                 } else {
                     System.out.println("Invalid input. ");
+                    System.out.println();
                 }
-            } else {
+            } catch (NumberFormatException e) {
                 System.out.println("Invalid input. ");
+                System.out.println();
             }
         }
     }
 
-    private void deletePlanner(int plannerNumber) {
-        if (activityPlanners.get(plannerNumber - 1) != null) {
-            System.out.println("\n*" + activityPlanners.get(plannerNumber - 1).getName() + " has been deleted.*");
-            activityPlanners.remove(plannerNumber - 1);
-            numPlanners--;
-        }
-    }
-
+    /*
+     * REQUIRES: plannerNumber has been checked by indexIsValid method
+     * MODIFIES: this
+     * EFFECTS: prompts the user to add a new activity to the selected planner
+     */
     private void addActivity(int plannerNumber) {
         input.nextLine();
         System.out.println("\nEnter the brief description of the new activity: ");
@@ -249,59 +268,144 @@ public class ActivityPlannerConsole {
         System.out.println("\nEnter the detailed description of the new activity: ");
         String detailedDescription = input.nextLine();
         System.out.println("\nEnter the day the new activity occurs: (SUN, MON, TUE, WED, THUR, FRI, SAT)");
+        Day day = getValidDay();
+        if (day == null) {
+            return;
+        }
+        System.out.println("\nEnter the start time of the new activity: (Between 0 - 23)");
+        int startTime = getValidStartTime();
+        if (startTime == -1) {
+            System.out.println("Invalid input");
+            return;
+        }
+        System.out.println("\nEnter the duration of the new activity: (Cannot go to next day)");
+        int duration = getValidDuration();
+        if (duration == -1) {
+            System.out.println("Invalid input");
+            return;
+        }
+        addActivity(plannerNumber, briefDescription, detailedDescription, day, startTime, duration);
+    }
+
+    /*
+     * MODIFIES: this
+     * EFFECTS: adds the activity to the selected planner
+     *          lets the user know if the activity is successfully added or not
+     */
+    private void addActivity(int plannerNumber, String brief, String detailed, Day day, int startTime, int duration) {
+        Activity newActivity = new Activity(brief, detailed, day, startTime, duration);
+        ActivityPlanner activityPlanner = activityPlannerBook.getActivityPlanner(plannerNumber);
+        if (activityPlanner.addActivity(newActivity)) {
+            System.out.println("\n*New activity successfully added.*");
+        } else {
+            System.out.println("\nDetected time conflicts / invalid time. New activity failed to be added. ");
+            System.out.println();
+        }
+    }
+
+    /*
+     * EFFECTS: ensures that the user input is a valid day
+     *          return the user input day if it is valid
+     *          returns null if it is not
+     */
+    private Day getValidDay() {
         Day day;
         try {
             day = Day.valueOf(input.next().toUpperCase());
         } catch (IllegalArgumentException e) {
             System.out.println("Invalid day entered. ");
-            return;
+            System.out.println();
+            return null;
         }
-        System.out.println("\nEnter the start time of the new activity: (Between 0 - 23)");
-        int startTime = input.nextInt();
-        System.out.println("\nEnter the duration of the new activity: (Cannot go over night)");
-        int duration = input.nextInt();
-        Activity newActivity = new Activity(briefDescription, detailedDescription, day, startTime, duration);
-        if (activityPlanners.get(plannerNumber - 1).addActivity(newActivity)) {
-            System.out.println("\n*New activity successfully added.*");
-        } else {
-            System.out.println("\nDetected time conflicts / invalid time. New activity failed to be added. ");
+        return day;
+    }
+
+    /*
+     * EFFECTS: ensures that the user input is an integer
+     *          returns the integer if it is
+     *          returns -1 otherwise
+     */
+    private int getValidStartTime() {
+        String inputStr = input.next();
+        try {
+            return Integer.parseInt(inputStr);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid startTime entered. ");
+            System.out.println();
+            return -1;
         }
     }
 
+    /*
+     * EFFECTS: ensures that the user input is an integer
+     *          returns the integer if it is
+     *          returns -1 otherwise
+     */
+    private int getValidDuration() {
+        String inputStr = input.next();
+        try {
+            return Integer.parseInt(inputStr);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid duration entered. ");
+            System.out.println();
+            return -1;
+        }
+    }
+
+    /*
+     * MODIFIES: this
+     * EFFECTS: displays the activities of the selected planner and
+     *          prompts the user to select the activity for further actions
+     *          returns the activity number if is valid
+     *          returns -1 otherwise
+     */
     private int displayActivities(int plannerNumber) {
-        ActivityPlanner activityPlanner = activityPlanners.get(plannerNumber - 1);
+        ActivityPlanner activityPlanner = activityPlannerBook.getActivityPlanner(plannerNumber);
         System.out.println(activityPlanner.viewActivities());
         if (!activityPlanner.isEmpty()) {
-            System.out.print("Enter the activity number for action: ");
-            if (input.hasNextInt()) {
-                int activityNumber = input.nextInt();
-                if (activityNumber > 0 && activityNumber <= activityPlanner.getNumActivities()) {
+            System.out.println("Enter the activity number for action: ");
+            String inputStr = input.next();
+            try {
+                int activityNumber = Integer.parseInt(inputStr);
+                if (activityPlanner.indexIsValid(activityNumber)) {
                     return activityNumber;
                 } else {
                     System.out.println("Invalid input. ");
+                    System.out.println();
                     return -1;
                 }
-            } else {
+            } catch (NumberFormatException e) {
                 System.out.println("Invalid input. ");
+                System.out.println();
                 return -1;
             }
         }
         return -1;
     }
 
+    /*
+     * REQUIRES: plannerNumber has been checked by indexIsValid method
+     * MODIFIES: this
+     * EFFECTS: prompts the user to delete the selected activity from the selected planner
+     */
     private void deleteActivity(int plannerNumber) {
         int activityNumber = displayActivities(plannerNumber);
         if (activityNumber != -1) {
-            ActivityPlanner activityPlanner = activityPlanners.get(plannerNumber - 1);
+            ActivityPlanner activityPlanner = activityPlannerBook.getActivityPlanner(plannerNumber);
             activityPlanner.deleteActivity(activityNumber);
             System.out.println("\n*The activity has been deleted*");
         }
     }
 
+    /*
+     * REQUIRES: plannerNumber has been checked by indexIsValid method
+     * MODIFIES: this
+     * EFFECTS: prompts the user to modify the brief description of the selected activity from the selected planner
+     */
     private void modifyBriefDescription(int plannerNumber) {
         int activityNumber = displayActivities(plannerNumber);
         if (activityNumber != -1) {
-            ActivityPlanner activityPlanner = activityPlanners.get(plannerNumber - 1);
+            ActivityPlanner activityPlanner = activityPlannerBook.getActivityPlanner(plannerNumber);
             System.out.println("\nEnter new brief description: ");
             input.nextLine();
             activityPlanner.setActivityBriefDescription(activityNumber, input.nextLine());
@@ -309,10 +413,15 @@ public class ActivityPlannerConsole {
         }
     }
 
+    /*
+     * REQUIRES: plannerNumber has been checked by indexIsValid method
+     * MODIFIES: this
+     * EFFECTS: prompts the user to modify the detailed description of the selected activity from the selected planner
+     */
     private void modifyDetailedDescription(int plannerNumber) {
         int activityNumber = displayActivities(plannerNumber);
         if (activityNumber != -1) {
-            ActivityPlanner activityPlanner = activityPlanners.get(plannerNumber - 1);
+            ActivityPlanner activityPlanner = activityPlannerBook.getActivityPlanner(plannerNumber);
             System.out.println("\nEnter new detailed description: ");
             input.nextLine();
             activityPlanner.setActivityDetailedDescription(activityNumber, input.nextLine());
@@ -320,10 +429,17 @@ public class ActivityPlannerConsole {
         }
     }
 
+    /*
+     * REQUIRES: plannerNumber has been checked by indexIsValid method
+     * MODIFIES: this
+     * EFFECTS: prompts the user to modify the day of the selected activity from the selected planner
+     *          lets the user know if the new day has been updated
+     *          or if it fails to update due to time conflicts
+     */
     private void modifyDay(int plannerNumber) {
         int activityNumber = displayActivities(plannerNumber);
         if (activityNumber != -1) {
-            ActivityPlanner activityPlanner = activityPlanners.get(plannerNumber - 1);
+            ActivityPlanner activityPlanner = activityPlannerBook.getActivityPlanner(plannerNumber);
             System.out.println("\nEnter new day: (SUN, MON, TUE, WED, THUR, FRI, SAT)");
             Day day;
             try {
@@ -335,67 +451,84 @@ public class ActivityPlannerConsole {
                 }
             } catch (IllegalArgumentException e) {
                 System.out.println("Invalid day entered. ");
+                System.out.println();
             }
         }
     }
 
+    /*
+     * REQUIRES: plannerNumber has been checked by indexIsValid method
+     * MODIFIES: this
+     * EFFECTS: prompts the user to modify the start time of the selected activity from the selected planner
+     *          lets the user know if the new start time has been updated
+     *          or if it fails to update due to time conflicts
+     */
     private void modifyStartTime(int plannerNumber) {
         int activityNumber = displayActivities(plannerNumber);
         if (activityNumber != -1) {
-            ActivityPlanner activityPlanner = activityPlanners.get(plannerNumber - 1);
+            ActivityPlanner activityPlanner = activityPlannerBook.getActivityPlanner(plannerNumber);
             System.out.println("\nEnter new start time: (0 - 23)");
-            int newStartTime;
+            String inputStr = input.next();
             try {
-                newStartTime = input.nextInt();
+                int newStartTime = Integer.parseInt(inputStr);
                 if (activityPlanner.setStartTime(activityNumber, newStartTime)) {
                     System.out.println("\n*The start time has been updated*");
                 } else {
                     System.out.println("\n*Update failed. Time is conflicted*");
                 }
-            } catch (InputMismatchException e) {
+            } catch (NumberFormatException e) {
                 System.out.println("Invalid start time entered. ");
+                System.out.println();
             }
         }
     }
 
+    /*
+     * REQUIRES: plannerNumber has been checked by indexIsValid method
+     * MODIFIES: this
+     * EFFECTS: prompts the user to modify the duration of the selected activity from the selected planner
+     *          lets the user know if the new duration has been updated
+     *          or if it fails to update due to time conflicts
+     */
     private void modifyDuration(int plannerNumber) {
         int activityNumber = displayActivities(plannerNumber);
         if (activityNumber != -1) {
-            ActivityPlanner activityPlanner = activityPlanners.get(plannerNumber - 1);
-            System.out.println("\nEnter new duration: (Cannot go over night)");
-            int newDuration;
+            ActivityPlanner activityPlanner = activityPlannerBook.getActivityPlanner(plannerNumber);
+            System.out.println("\nEnter new duration: (Cannot go to next day)");
+            String inputStr = input.next();
             try {
-                newDuration = input.nextInt();
+                int newDuration = Integer.parseInt(inputStr);
                 if (activityPlanner.setDuration(activityNumber, newDuration)) {
                     System.out.println("\n*The duration has been updated*");
                 } else {
                     System.out.println("\n*Update failed. Time is conflicted*");
                 }
-            } catch (InputMismatchException e) {
+            } catch (NumberFormatException e) {
                 System.out.println("Invalid duration entered. ");
+                System.out.println();
             }
         }
     }
 
+    /*
+     * REQUIRES: plannerNumber has been checked by indexIsValid method
+     * EFFECTS: display all activities of the selected planner and
+     *          prompts the user to see detailed description of the specific activity
+     */
     private void viewActivities(int plannerNumber) {
-        ActivityPlanner activityPlanner = activityPlanners.get(plannerNumber - 1);
+        ActivityPlanner activityPlanner = activityPlannerBook.getActivityPlanner(plannerNumber);
         System.out.println(activityPlanner.viewActivities());
         if (!activityPlanner.isEmpty()) {
-            boolean keepGoing = true;
-            while (keepGoing) {
-                System.out.println("To view the activity in detail, please enter its corresponding number, ");
-                System.out.print("Press any other key to go back to the previous menu: ");
-                int activityNumber;
-                try {
-                    activityNumber = input.nextInt();
-                    if (activityNumber > 0 && activityNumber <= activityPlanner.getNumActivities()) {
-                        System.out.println(activityPlanner.viewActivityDetailedDescription(activityNumber) + "\n");
-                    } else {
-                        keepGoing = false;
-                    }
-                } catch (InputMismatchException e) {
-                    return;
+            System.out.println("To view the activity in detail, please enter its corresponding number, ");
+            System.out.println("Press any other key to go back to the previous menu: ");
+            String inputStr = input.next();
+            try {
+                int activityNumber = Integer.parseInt(inputStr);
+                if (activityPlannerBook.getActivityPlanner(plannerNumber).indexIsValid(activityNumber)) {
+                    System.out.println(activityPlanner.getActivityDetailedDescription(activityNumber) + "\n");
                 }
+            } catch (NumberFormatException e) {
+                return;
             }
         }
     }

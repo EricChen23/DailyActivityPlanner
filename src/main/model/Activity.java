@@ -12,11 +12,10 @@ public class Activity {
     private int duration;                // the duration of the activity in whole hours
 
     /*
-     * REQUIRES: briefDescription has a non-zero length
-     *           detailedDescription has a non-zero length
-     *           startTime >= 0 and startTime <= 23
+     * REQUIRES: startTime >= 0 and startTime <= 23
      *           duration > 0
      *           startTime + duration <= 24
+     * MODIFIES: this
      * EFFECTS: briefDescription of the activity is set to activityBriefDescription
      *          detailedDescription of the activity is set to activityDetailedDescription
      *          day of the activity is set to activityDay
@@ -53,7 +52,6 @@ public class Activity {
     }
 
     /*
-     * REQUIRES: updatedBriefDescription has a non-zero length
      * MODIFIES: this
      * EFFECTS: briefDescription is updated to updatedBriefDescription
      */
@@ -62,7 +60,6 @@ public class Activity {
     }
 
     /*
-     * REQUIRES: updatedDetailedDescription has a non-zero length
      * MODIFIES: this
      * EFFECTS: detailedDescription is updated to updatedDetailedDescription
      */
