@@ -28,10 +28,6 @@ public class ActivityPlanner {
         return activityPlannerTable;
     }
 
-    public ArrayList<Activity> getActivityList() {
-        return activities;
-    }
-
     public int getNumActivities() {
         return numActivities;
     }
@@ -71,7 +67,7 @@ public class ActivityPlanner {
     public boolean addActivity(Activity newActivity) {
         int startTime = newActivity.getStartTime();
         int duration = newActivity.getDuration();
-        if (startTime < 0 || startTime >= HOURS || (startTime + duration) > HOURS) {
+        if (startTime < 0 || startTime >= HOURS || duration <= 0 || (startTime + duration) > HOURS) {
             return false;
         } else if (noConflict(newActivity)) {
             int insertIndex = findInsertIndex(newActivity);

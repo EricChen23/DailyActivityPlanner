@@ -27,6 +27,48 @@ public class ActivityPlannerTest {
     }
 
     @Test
+    void testIndexIsValid() {
+        boolean isValid = testPlanner.indexIsValid(1);
+        assertFalse(isValid);
+        boolean successfullyAdded = testPlanner.addActivity(activityMonEightNine);
+        assertTrue(successfullyAdded);
+        isValid = testPlanner.indexIsValid(1);
+        assertTrue(isValid);
+        isValid = testPlanner.indexIsValid(0);
+        assertFalse(isValid);
+        isValid = testPlanner.indexIsValid(2);
+        assertFalse(isValid);
+    }
+
+    @Test
+    void testAddNegativeStarTimeActivity() {
+        Activity invalidStartTimeActivity = new Activity("N/A", "N/A", Day.SUN, -1, 5);
+        boolean successfullyAdded = testPlanner.addActivity(invalidStartTimeActivity);
+        assertFalse(successfullyAdded);
+    }
+
+    @Test
+    void testStartTimeOverTwentyThree() {
+        Activity invalidStartTimeActivity = new Activity("N/A", "N/A", Day.SUN, 24, 5);
+        boolean successfullyAdded = testPlanner.addActivity(invalidStartTimeActivity);
+        assertFalse(successfullyAdded);
+    }
+
+    @Test
+    void testNegativeDuration() {
+        Activity invalidDurationActivity = new Activity("N/A", "N/A", Day.SUN, 5, -1);
+        boolean successfullyAdded = testPlanner.addActivity(invalidDurationActivity);
+        assertFalse(successfullyAdded);
+    }
+
+    @Test
+    void testDurationOverNight() {
+        Activity invalidDurationActivity = new Activity("N/A", "N/A", Day.SUN, 5, 20);
+        boolean successfullyAdded = testPlanner.addActivity(invalidDurationActivity);
+        assertFalse(successfullyAdded);
+    }
+
+    @Test
     void testAddOneActivity() {
         boolean successfullyAdded = testPlanner.addActivity(new Activity("A1SUN8-9", "SUNDAY8TO9", Day.SUN, 8, 1));
         assertTrue(successfullyAdded);
@@ -64,6 +106,11 @@ public class ActivityPlannerTest {
         assertTrue(successfullyAddedOne);
         assertTrue(successfullyAddedTwo);
         assertFalse(unsuccessfullyAddedOne);
+
+        testPlanner.setActivityBriefDescription(1, "New A1MON8-9");
+        testPlanner.setActivityDetailedDescription(1, "New MONDAY8TO9");
+        assertEquals("New A1MON8-9", testPlanner.getActivityBriefDescription(1));
+        assertEquals("New MONDAY8TO9", testPlanner.getActivityDetailedDescription(1));
     }
 
     @Test
@@ -145,6 +192,39 @@ public class ActivityPlannerTest {
         assertEquals(2, testPlanner.getNumActivities());
         assertEquals(Day.MON, testPlanner.getActivityDay(1));
         assertEquals(Day.TUE, testPlanner.getActivityDay(2));
+    }
+
+    @Test
+    void testSetStartTime() {
+        boolean successfullyAddedOne = testPlanner.addActivity(activityMonEightNine);
+        boolean successfullyAddedTwo = testPlanner.addActivity(activityTueEightNine);
+        boolean successfullyUpdated = testPlanner.setStartTime(2, 7);
+        assertTrue(successfullyAddedOne);
+        assertTrue(successfullyAddedTwo);
+        assertTrue(successfullyUpdated);
+        assertEquals(7, testPlanner.getActivityStartTime(2));
+        successfullyUpdated = testPlanner.setActivityDay(2, Day.MON);
+        assertTrue(successfullyUpdated);
+        assertEquals(7, testPlanner.getActivityStartTime(1));
+        successfullyUpdated = testPlanner.setStartTime(1, 8);
+        assertFalse(successfullyUpdated);
+    }
+
+    @Test
+    void testSetDuration() {
+        boolean successfullyAddedOne = testPlanner.addActivity(activityMonEightNine);
+        boolean successfullyAddedTwo = testPlanner.addActivity(activityTueEightNine);
+        assertTrue(successfullyAddedOne);
+        assertTrue(successfullyAddedTwo);
+        boolean successfullyUpdated = testPlanner.setDuration(1, 5);
+        assertTrue(successfullyUpdated);
+        assertEquals(5, testPlanner.getActivityDuration(1));
+        successfullyUpdated = testPlanner.setStartTime(1, 9);
+        assertTrue(successfullyUpdated);
+        successfullyUpdated = testPlanner.setActivityDay(1, Day.TUE);
+        assertTrue(successfullyUpdated);
+        successfullyUpdated = testPlanner.setDuration(1, 5);
+        assertFalse(successfullyUpdated);
     }
 
 }
