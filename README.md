@@ -19,3 +19,5 @@ organize their lives better.
 - As a user, I want to be able to modify my existed daily activity on the planner
 - As a user, I want to be able to select a certain activity on the planner and view it in detail
 - As a user, I want to be able to create several daily activity planners
+- As a user, I want to be able to save my modified daily planner to file so that I can work on it some other time
+- As a user, I want to be able to load my daily planner from file when I start the application and resume exactly where they left off at some earlier time
