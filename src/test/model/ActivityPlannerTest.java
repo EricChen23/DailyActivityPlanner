@@ -123,12 +123,6 @@ public class ActivityPlannerTest {
         assertEquals(0, testPlanner.getNumActivities());
         assertTrue(testPlanner.isEmpty());
         assertEquals("There are no activities. ", testPlanner.viewActivities());
-
-        Activity[][] activityTable = testPlanner.getActivityPlannerTable();
-        int duration = activityMonEightNine.getDuration();
-        for (int i = 0; i < duration; i++) {
-            assertNull(activityTable[activityMonEightNine.getStartTime() + i][activityMonEightNine.getDay().ordinal()]);
-        }
     }
 
     @Test
@@ -147,16 +141,6 @@ public class ActivityPlannerTest {
         summary += 1 + " --> AN1TUE7-8 from 7:00 to 8:00 on TUE\n";
         summary += 2 + " --> A2TUE8-9 from 8:00 to 9:00 on TUE\n";
         assertEquals(summary, testPlanner.viewActivities());
-
-        Activity[][] activityTable = testPlanner.getActivityPlannerTable();
-        int duration = activityMonEightNine.getDuration();
-        for (int i = 0; i < duration; i++) {
-            assertNull(activityTable[8 + i][Day.MON.ordinal()]);
-        }
-
-        for (int i = 0; i < activityNewOne.getDuration(); i++) {
-            assertEquals(activityNewOne, activityTable[7 + i][Day.TUE.ordinal()]);
-        }
     }
 
     @Test
@@ -169,16 +153,6 @@ public class ActivityPlannerTest {
         assertTrue(successfullyChangedTwo);
         assertEquals(2, testPlanner.getNumActivities());
         assertEquals(Day.SUN, testPlanner.getActivityDay(1));
-
-        Activity[][] activityTable = testPlanner.getActivityPlannerTable();
-        int duration = activityTueEightNine.getDuration();
-        for (int i = 0; i < duration; i++) {
-            assertNull(activityTable[8 + i][Day.TUE.ordinal()]);
-        }
-
-        for (int i = 0; i < duration; i++) {
-            assertEquals(activityTueEightNine, activityTable[8 + i][Day.SUN.ordinal()]);
-        }
     }
 
     @Test
@@ -225,6 +199,7 @@ public class ActivityPlannerTest {
         boolean successfullyAddedTwo = testPlanner.addActivity(activityTueEightNine);
         assertTrue(successfullyAddedOne);
         assertTrue(successfullyAddedTwo);
+        assertEquals(activityMonEightNine, testPlanner.getActivity(1));
         boolean successfullyUpdated = testPlanner.setDuration(1, -1);
         assertFalse(successfullyUpdated);
         successfullyUpdated = testPlanner.setDuration(1, 25);

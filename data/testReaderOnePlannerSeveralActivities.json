@@ -1,0 +1,43 @@
+{
+  "activityPlanners": [{
+    "activities": [
+      {
+        "duration": 6,
+        "detailedDescription": "Activity 1",
+        "startTime": 6,
+        "day": "SUN",
+        "briefDescription": "Act 1"
+      },
+      {
+        "duration": 6,
+        "detailedDescription": "Activity 2",
+        "startTime": 6,
+        "day": "TUE",
+        "briefDescription": "Act 2"
+      },
+      {
+        "duration": 6,
+        "detailedDescription": "Activity 4",
+        "startTime": 6,
+        "day": "WED",
+        "briefDescription": "Act 4"
+      },
+      {
+        "duration": 6,
+        "detailedDescription": "Activity 3",
+        "startTime": 6,
+        "day": "THUR",
+        "briefDescription": "Act 3"
+      },
+      {
+        "duration": 6,
+        "detailedDescription": "Activity 5",
+        "startTime": 6,
+        "day": "FRI",
+        "briefDescription": "Act 5"
+      }
+    ],
+    "planner name": "Empty"
+  }],
+  "planner book name": "Test"
+}

@@ -1,9 +1,13 @@
 package model;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import persistence.Writable;
+
 import java.util.ArrayList;
 
 // Represents an activity planner book which contains of 3 activity planners
-public class ActivityPlannerBook {
+public class ActivityPlannerBook implements Writable {
     public static final int MAX_PLANNERS_NUMBER = 3;
     private int numPlanners;
     private String username;
@@ -105,4 +109,34 @@ public class ActivityPlannerBook {
         activityPlanners.remove(index);
         numPlanners--;
     }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("planner book name", username);
+        json.put("activityPlanners", activityPlannersToJson());
+        return json;
+    }
+
+    // EFFECTS: returns activity planners in this activity planner book as a JSON array
+    private JSONArray activityPlannersToJson() {
+        JSONArray jsonArray = new JSONArray();
+
+        for (ActivityPlanner ap : activityPlanners) {
+            jsonArray.put(ap.toJson());
+        }
+
+        return jsonArray;
+    }
+
+    /*
+     * MODIFIES: this
+     * EFFECTS: load the activity planner to the planner book directly
+     */
+    public void loadActivityPlanner(ActivityPlanner ap) {
+        numPlanners++;
+        activityPlanners.add(ap);
+    }
+
+
 }

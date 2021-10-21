@@ -1,15 +1,16 @@
 package model;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import persistence.Writable;
+
 import java.util.ArrayList;
 
-public class ActivityPlanner {
+public class ActivityPlanner implements Writable {
     public static final int HOURS  = 24;
-    public static final int DAYS = 7;
     private String name;
     private int numActivities;
     private ArrayList<Activity> activities;
-    private Activity[][] activityPlannerTable; // A planner table with 24 rows and 7 columns representing
-                                       // 24 hours of the day and 7 days of the week respectively
 
     /*
      * MODIFIES: this
@@ -21,12 +22,8 @@ public class ActivityPlanner {
         name = plannerName;
         numActivities = 0;
         activities = new ArrayList<>();
-        activityPlannerTable = new Activity[HOURS][DAYS];
     }
 
-    public Activity[][] getActivityPlannerTable() {
-        return activityPlannerTable;
-    }
 
     public int getNumActivities() {
         return numActivities;
@@ -46,6 +43,13 @@ public class ActivityPlanner {
      */
     public boolean isEmpty() {
         return (numActivities == 0);
+    }
+
+    /*
+     * EFFECTS: returns the specified activity
+     */
+    public Activity getActivity(int activityNumber) {
+        return activities.get(activityNumber - 1);
     }
 
     /*
@@ -73,9 +77,6 @@ public class ActivityPlanner {
             int insertIndex = findInsertIndex(newActivity);
             activities.add(insertIndex, newActivity);
             numActivities++;
-            for (int i = 0; i < duration; i++) {
-                activityPlannerTable[startTime + i][newActivity.getDay().ordinal()] = newActivity;
-            }
             return true;
         } else {
             return false;
@@ -91,10 +92,20 @@ public class ActivityPlanner {
     public boolean noConflict(Activity activity) {
         int startTime = activity.getStartTime();
         int duration = activity.getDuration();
-        int day = activity.getDay().ordinal();
-        for (int i  = 0; i < duration; i++) {
-            if (activityPlannerTable[startTime + i][day] != null) {
-                return false;
+        Day day = activity.getDay();
+        for (Activity a : activities) {
+            if (day == a.getDay()) {
+                if (startTime < a.getStartTime()) {
+                    if ((startTime + duration) > a.getStartTime()) {
+                        return false;
+                    }
+                } else if (startTime == a.getStartTime()) {
+                    return false;
+                } else if (startTime > a.getStartTime()) {
+                    if (startTime < (a.getStartTime() + a.getDuration())) {
+                        return false;
+                    }
+                }
             }
         }
         return true;
@@ -152,11 +163,7 @@ public class ActivityPlanner {
      */
     public void deleteActivity(int activityNumber) {
         int activityIndex = activityNumber - 1;
-        Activity activity = activities.get(activityIndex);
         activities.remove(activityIndex);
-        for (int i = 0; i < activity.getDuration(); i++) {
-            activityPlannerTable[activity.getStartTime() + i][activity.getDay().ordinal()] = null;
-        }
         numActivities--;
     }
 
@@ -228,23 +235,15 @@ public class ActivityPlanner {
     public boolean setActivityDay(int activityNumber, Day newDay) {
         int activityIndex = activityNumber - 1;
         Activity toBeChanged = activities.get(activityIndex);
-        int duration = toBeChanged.getDuration();
-        int startTime = toBeChanged.getStartTime();
         Day currDay = toBeChanged.getDay();
-        for (int i = 0; i < duration; i++) {
-            activityPlannerTable[startTime + i][currDay.ordinal()] = null;
-        }
         toBeChanged.setDay(newDay);
-        if (noConflict(toBeChanged)) {
-            activities.remove(activityIndex);
-            numActivities--;
-            return addActivity(toBeChanged);
+        activities.remove(activityIndex);
+        numActivities--;
+        if (addActivity(toBeChanged)) {
+            return true;
         } else {
             toBeChanged.setDay(currDay);
-            for (int i = 0; i < duration; i++) {
-                activityPlannerTable[startTime + i][currDay.ordinal()] = toBeChanged;
-            }
-            return false;
+            return !addActivity(toBeChanged);
         }
     }
 
@@ -255,29 +254,23 @@ public class ActivityPlanner {
      *          returns true if the start time has been updated
      *          returns false if nothing has changed due to time conflicts
      */
-    public boolean setStartTime(int activityIndex, int newStartTime) {
+    public boolean setStartTime(int activityNumber, int newStartTime) {
         if (newStartTime < 0 || newStartTime > HOURS - 1) {
             return false;
         }
-        Activity toBeChanged = activities.get(activityIndex - 1);
+        Activity toBeChanged = activities.get(activityNumber - 1);
         int oldStartTime = toBeChanged.getStartTime();
         if (newStartTime + toBeChanged.getDuration() > HOURS) {
             return false;
         }
-        for (int i = 0; i < toBeChanged.getDuration(); i++) {
-            activityPlannerTable[oldStartTime + i][toBeChanged.getDay().ordinal()] = null;
-        }
+        activities.remove(activityNumber - 1);
+        numActivities--;
         toBeChanged.setStartTime(newStartTime);
-        if (noConflict(toBeChanged)) {
-            activities.remove(activityIndex - 1);
-            numActivities--;
-            return addActivity(toBeChanged);
+        if (addActivity(toBeChanged)) {
+            return true;
         } else {
             toBeChanged.setStartTime(oldStartTime);
-            for (int i = 0; i < toBeChanged.getDuration(); i++) {
-                activityPlannerTable[oldStartTime + i][toBeChanged.getDay().ordinal()] = toBeChanged;
-            }
-            return false;
+            return !addActivity(toBeChanged);
         }
     }
 
@@ -293,24 +286,38 @@ public class ActivityPlanner {
             return false;
         }
         Activity toBeChanged = activities.get(activityIndex - 1);
-        int oldDuration = toBeChanged.getDuration();
-        if (toBeChanged.getStartTime() + newDuration > HOURS) {
+        int startTime = toBeChanged.getStartTime();
+        if (startTime + newDuration > HOURS) {
             return false;
-        }
-        for (int i = 0; i < oldDuration; i++) {
-            activityPlannerTable[toBeChanged.getStartTime() + i][toBeChanged.getDay().ordinal()] = null;
+        } else {
+            for (Activity a : activities) {
+                if (toBeChanged.getDay() == a.getDay() && startTime != a.getStartTime()) {
+                    if ((startTime + newDuration) > a.getStartTime()) {
+                        return false;
+                    }
+                }
+            }
         }
         toBeChanged.setDuration(newDuration);
-        if (noConflict(toBeChanged)) {
-            activities.remove(activityIndex - 1);
-            numActivities--;
-            return addActivity(toBeChanged);
-        } else {
-            toBeChanged.setDuration(oldDuration);
-            for (int i = 0; i < toBeChanged.getDuration(); i++) {
-                activityPlannerTable[toBeChanged.getStartTime() + i][toBeChanged.getDay().ordinal()] = toBeChanged;
-            }
-            return false;
+        return true;
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("planner name", name);
+        json.put("activities", activitiesToJson());
+        return json;
+    }
+
+    // EFFECTS: returns activities in this activity planner as a JSON array
+    private JSONArray activitiesToJson() {
+        JSONArray jsonArray = new JSONArray();
+
+        for (Activity a : activities) {
+            jsonArray.put(a.toJson());
         }
+
+        return jsonArray;
     }
 }

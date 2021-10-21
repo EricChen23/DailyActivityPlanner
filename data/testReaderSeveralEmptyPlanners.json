@@ -1,0 +1,23 @@
+{
+  "activityPlanners": [
+    {
+      "activities": [],
+      "planner name": "Test1"
+    },
+    {
+      "activities": [{
+        "duration": 12,
+        "detailedDescription": "Activity in Test 2",
+        "startTime": 7,
+        "day": "TUE",
+        "briefDescription": "Act in 2"
+      }],
+      "planner name": "Test2"
+    },
+    {
+      "activities": [],
+      "planner name": "Test3"
+    }
+  ],
+  "planner book name": "TestBook"
+}

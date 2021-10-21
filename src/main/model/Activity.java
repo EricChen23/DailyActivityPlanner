@@ -1,10 +1,13 @@
 package model;
 
+import org.json.JSONObject;
+import persistence.Writable;
+
 /*
  * Represents an activity having its brief description, detailed description,
  * day of occurrence, and corresponding time (24h format)
  */
-public class Activity {
+public class Activity implements Writable {
     private String briefDescription;    // the brief description of the activity
     private String detailedDescription; // the detailed description of the activity
     private Day day;                    // the day of occurrence of the activity
@@ -103,5 +106,16 @@ public class Activity {
     public String toString() {
         return "Brief description: " + briefDescription + "\n" + "Detailed description: " + detailedDescription + "\n"
                 + "Day: " + day + "\n" + "Start time: " + startTime + " h\n" + "Duration: " + duration + " h\n";
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("briefDescription", briefDescription);
+        json.put("detailedDescription", detailedDescription);
+        json.put("day", day);
+        json.put("startTime", startTime);
+        json.put("duration", duration);
+        return json;
     }
 }

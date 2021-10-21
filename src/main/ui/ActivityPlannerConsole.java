@@ -4,17 +4,24 @@ import model.Activity;
 import model.ActivityPlanner;
 import model.ActivityPlannerBook;
 import model.Day;
+import persistence.JsonReader;
+import persistence.JsonWriter;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
-// Reference to Teller App Console
+// Reference to Teller App Console and JsonSerializationDemo
 // Activity planner application
 public class ActivityPlannerConsole {
-    ActivityPlannerBook activityPlannerBook;
+    private ActivityPlannerBook activityPlannerBook;
     private Scanner input;
-
+    private static final String JSON_STORE = "./data/activityplannerbook.json";
+    private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
 
     // EFFECTS: runs the ActivityPlanner application
-    public ActivityPlannerConsole() {
+    public ActivityPlannerConsole() throws FileNotFoundException {
         runActivityPlannerConsole();
     }
 
@@ -58,6 +65,10 @@ public class ActivityPlannerConsole {
             case "d":
                 deletePlannerPrompt();
                 break;
+            case "s":
+                saveBook();
+            case "l":
+                loadBook();
         }
     }
 
@@ -67,6 +78,8 @@ public class ActivityPlannerConsole {
      */
     private void init() {
         input = new Scanner(System.in);
+        jsonWriter = new JsonWriter(JSON_STORE);
+        jsonReader = new JsonReader(JSON_STORE);
         System.out.println("Whats your first name?");
         activityPlannerBook = new ActivityPlannerBook(input.next());
     }
@@ -122,6 +135,8 @@ public class ActivityPlannerConsole {
         System.out.println("\tc -> choose an existing activity planner");
         System.out.println("\tch -> change name of an existing activity planner");
         System.out.println("\td -> delete an existing activity planner");
+        System.out.println("\ts -> save activity planner book to file");
+        System.out.println("\tl -> load activity planner book from file");
         System.out.println("\tq -> quit");
     }
 
@@ -154,7 +169,8 @@ public class ActivityPlannerConsole {
     private void createPlanner() {
         if (activityPlannerBook.hasAvailableSpot()) {
             String plannerName;
-            System.out.println("Enter the name of the new activity planner: (planner name cannot be empty)");
+            System.out.print("Enter the name of the new activity planner: ");
+            System.out.println("(Planner name cannot be empty and has to be one word)");
             plannerName = input.next();
             activityPlannerBook.createNewPlanner(plannerName);
             System.out.println("\n*" + plannerName + " is successfully created*");
@@ -169,7 +185,8 @@ public class ActivityPlannerConsole {
      */
     private void changePlannerName(int plannerNumber) {
         System.out.println("\nPlanner to be changed: " + activityPlannerBook.getPlannerName(plannerNumber));
-        System.out.println("Enter the new name of this planner: (planner name cannot be empty)");
+        System.out.print("Enter the name of the new activity planner: ");
+        System.out.println("(Planner name cannot be empty and has to be one word)");
         String plannerName;
         plannerName = input.next();
         activityPlannerBook.changePlannerName(plannerNumber, plannerName);
@@ -533,6 +550,28 @@ public class ActivityPlannerConsole {
         }
     }
 
+    // EFFECTS: saves the planner book to file
+    private void saveBook() {
+        try {
+            jsonWriter.open();
+            jsonWriter.write(activityPlannerBook);
+            jsonWriter.close();
+            System.out.println(activityPlannerBook.getPlannerBookName() + " has been saved to " + JSON_STORE);
+        } catch (FileNotFoundException e) {
+            System.out.println("Unable to write to file: " + JSON_STORE);
+        }
+    }
 
+    // MODIFIES: this
+    // EFFECTS: loads workroom from file
+    private void loadBook() {
+        try {
+            activityPlannerBook = jsonReader.read();
+            String bookOwner = activityPlannerBook.getPlannerBookName();
+            System.out.println("Loaded " + bookOwner + "'s planner book from " + JSON_STORE);
+        } catch (IOException e) {
+            System.out.println("Unable to read from file: " + JSON_STORE);
+        }
+    }
 
 }
