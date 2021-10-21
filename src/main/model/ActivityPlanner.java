@@ -241,8 +241,8 @@ public class ActivityPlanner implements Writable {
             return true;
         } else {
             toBeChanged.setDay(currDay);
-            boolean reverse = addActivity(toBeChanged);
-            return !reverse;
+            addActivity(toBeChanged);
+            return false;
         }
     }
 
@@ -269,8 +269,8 @@ public class ActivityPlanner implements Writable {
             return true;
         } else {
             toBeChanged.setStartTime(oldStartTime);
-            boolean reverse = addActivity(toBeChanged);
-            return !reverse;
+            addActivity(toBeChanged);
+            return false;
         }
     }
 
@@ -298,8 +298,8 @@ public class ActivityPlanner implements Writable {
             return true;
         } else {
             toBeChanged.setDuration(oldDuration);
-            boolean reverse = addActivity(toBeChanged);
-            return !reverse;
+            addActivity(toBeChanged);
+            return false;
         }
     }
 
