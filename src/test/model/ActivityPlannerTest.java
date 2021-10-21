@@ -217,4 +217,26 @@ public class ActivityPlannerTest {
         assertFalse(successfullyUpdated);
     }
 
+    @Test
+    void testNoConflict() {
+        ActivityPlanner ap = new ActivityPlanner("Test");
+        boolean successfullyAdded = ap.addActivity(activityMonEightNine);
+        boolean successfullyUpdated = ap.setDuration(1,4);
+        assertTrue(successfullyAdded);
+        assertTrue(successfullyUpdated);
+        Activity testActEarly = new Activity("T", "T", Day.MON, 4, 5);
+        Activity testActLate = new Activity("T", "T", Day.MON, 10, 5);
+        successfullyAdded = ap.addActivity(testActEarly);
+        assertFalse(successfullyAdded);
+        successfullyAdded = ap.addActivity(testActLate);
+        assertFalse(successfullyAdded);
+        Activity testFail = new Activity("Fail", "Fail", Day.MON, 5, 3);
+        successfullyAdded = ap.addActivity(testFail);
+        assertTrue(successfullyAdded);
+        successfullyUpdated = ap.setStartTime(1, 6);
+        assertFalse(successfullyUpdated);
+        successfullyUpdated = ap.setDuration(1, 7);
+        assertFalse(successfullyUpdated);
+    }
+
 }
