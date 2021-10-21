@@ -101,10 +101,8 @@ public class ActivityPlanner implements Writable {
                     }
                 } else if (startTime == a.getStartTime()) {
                     return false;
-                } else if (startTime > a.getStartTime()) {
-                    if (startTime < (a.getStartTime() + a.getDuration())) {
-                        return false;
-                    }
+                } else if (startTime < (a.getStartTime() + a.getDuration())) {
+                    return false;
                 }
             }
         }
@@ -243,7 +241,8 @@ public class ActivityPlanner implements Writable {
             return true;
         } else {
             toBeChanged.setDay(currDay);
-            return !addActivity(toBeChanged);
+            boolean reverse = addActivity(toBeChanged);
+            return !reverse;
         }
     }
 
@@ -270,7 +269,8 @@ public class ActivityPlanner implements Writable {
             return true;
         } else {
             toBeChanged.setStartTime(oldStartTime);
-            return !addActivity(toBeChanged);
+            boolean reverse = addActivity(toBeChanged);
+            return !reverse;
         }
     }
 
@@ -281,25 +281,26 @@ public class ActivityPlanner implements Writable {
      *          returns true if the duration has been updated
      *          returns false if nothing has changed due to time conflicts
      */
-    public boolean setDuration(int activityIndex, int newDuration) {
+    public boolean setDuration(int activityNumber, int newDuration) {
         if (newDuration < 0 || newDuration > HOURS) {
             return false;
         }
-        Activity toBeChanged = activities.get(activityIndex - 1);
+        Activity toBeChanged = activities.get(activityNumber - 1);
         int startTime = toBeChanged.getStartTime();
+        int oldDuration = toBeChanged.getDuration();
         if (startTime + newDuration > HOURS) {
             return false;
-        } else {
-            for (Activity a : activities) {
-                if (toBeChanged.getDay() == a.getDay() && startTime != a.getStartTime()) {
-                    if ((startTime + newDuration) > a.getStartTime()) {
-                        return false;
-                    }
-                }
-            }
         }
+        activities.remove(activityNumber - 1);
+        numActivities--;
         toBeChanged.setDuration(newDuration);
-        return true;
+        if (addActivity(toBeChanged)) {
+            return true;
+        } else {
+            toBeChanged.setDuration(oldDuration);
+            boolean reverse = addActivity(toBeChanged);
+            return !reverse;
+        }
     }
 
     @Override
