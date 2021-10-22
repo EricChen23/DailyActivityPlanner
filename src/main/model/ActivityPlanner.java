@@ -6,6 +6,7 @@ import persistence.Writable;
 
 import java.util.ArrayList;
 
+// Represents an activity planner which holds activities
 public class ActivityPlanner implements Writable {
     public static final int HOURS  = 24;
     private String name;
