@@ -6,10 +6,14 @@ import java.io.FileNotFoundException;
 // with reference to JsonSerializationDemo
 public class Main {
     public static void main(String[] args) {
+        /*
         try {
             new ActivityPlannerConsole();
         } catch (FileNotFoundException e) {
             System.out.println("Unable to run application: file not found");
         }
+        */
+
+        new ActivityPlannerBookFrame();
     }
 }
