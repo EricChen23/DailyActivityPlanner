@@ -1,43 +1,85 @@
 package ui;
 
-import model.ActivityPlanner;
+
 import model.ActivityPlannerBook;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class ActivityPlannerBookPanel extends JPanel {
-    private ActivityPlannerBook activityPlannerBook;
-    private JButton createPlanner;
-    private JLabel full;
+    TitledBorder title;
+    private JButton createPlannerBtn;
+    private JButton changeNameBtn;
+    private JButton choosePlannerBtn;
+    private JButton delPlannerBtn;
+    private JButton saveBtn;
+    private JButton backBtn;
+    private JButton quitBtn;
 
-    public ActivityPlannerBookPanel(String name) {
-        activityPlannerBook = new ActivityPlannerBook(name);
-        setLayout(new BorderLayout());
-        createPlanner = new JButton("Create new activity planner");
-        createPlanner.setHorizontalAlignment(JLabel.CENTER);
-        createPlanner.setVerticalAlignment(JLabel.CENTER);
-        add(createPlanner, BorderLayout.CENTER);
+    public ActivityPlannerBookPanel(ActivityPlannerBook apb) {
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 0, 5, 0);
+        title = BorderFactory.createTitledBorder(apb.getPlannerBookName() + "'s Activity Planner Book");
+        title.setTitleJustification(TitledBorder.CENTER);
+        setBorder(title);
+        initButtons();
 
-        createPlanner.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                plannerWizard();
-            }
-        });
+        add(changeNameBtn, gbc);
+        add(createPlannerBtn, gbc);
+        add(choosePlannerBtn, gbc);
+        add(delPlannerBtn, gbc);
+        add(saveBtn, gbc);
+        add(backBtn, gbc);
+        add(quitBtn, gbc);
     }
 
-    private void plannerWizard() {
-        if (!activityPlannerBook.hasAvailableSpot()) {
-            full = new JLabel("Your planner book is full. You cannot create more planners.");
-            add(full, BorderLayout.PAGE_END);
-            repaint();
-        } else {
-            full = new JLabel("Your planner book is full. You cannot create more planners.");
-            add(full, BorderLayout.PAGE_END);
-            repaint();
-        }
+    private void initButtons() {
+        createPlannerBtn = new JButton("create a new activity planner");
+        changeNameBtn = new JButton("change name of this planner book");
+        choosePlannerBtn = new JButton("go to an existing activity planner");
+        delPlannerBtn = new JButton("delete an existing activity planner");
+        saveBtn = new JButton("save activity planner book to file");
+        backBtn = new JButton("go back to main menu");
+        quitBtn = new JButton("quit");
     }
+
+    public JButton getCreatePlannerBtn() {
+        return createPlannerBtn;
+    }
+
+    public JButton getChangeNameBtn() {
+        return changeNameBtn;
+    }
+
+    public JButton getChoosePlannerBtn() {
+        return choosePlannerBtn;
+    }
+
+    public JButton getDelPlannerBtn() {
+        return delPlannerBtn;
+    }
+
+    public JButton getSaveBtn() {
+        return saveBtn;
+    }
+
+    public JButton getBackBtn() {
+        return backBtn;
+    }
+
+    public JButton getQuitBtn() {
+        return quitBtn;
+    }
+
+    public void setName(String newName) {
+        title.setTitle(newName + "'s Activity Planner Book");
+    }
+
+
 }
