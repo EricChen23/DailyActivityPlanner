@@ -3,12 +3,17 @@ package ui;
 import javax.swing.*;
 import java.awt.*;
 
+// Represents the panel that accepts user input to create a brand-new activity planner book
 public class CreateNewBookPanel extends JPanel {
     private JTextField grabName;
     private JButton create;
     private JLabel nameLabel;
     private JLabel emptyNameLabel;
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: sets up the panel for user to input the name of the brand-new activity planner book
+     */
     public CreateNewBookPanel() {
         grabName = new JTextField("");
         create = new JButton("Create!");
@@ -35,6 +40,10 @@ public class CreateNewBookPanel extends JPanel {
         return create;
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: the label becomes visible if the input is empty
+     */
     public void showEmptyLabel() {
         emptyNameLabel.setVisible(true);
     }

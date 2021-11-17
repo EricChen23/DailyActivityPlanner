@@ -6,6 +6,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+// Represents the activity planner panel
 public class ActivityPlannerPanel extends JSplitPane {
 
     private ActivityPlanner ap;
@@ -31,6 +32,11 @@ public class ActivityPlannerPanel extends JSplitPane {
     private Boolean hasSelected;
     private int selectedIndex;
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: constructs the activity planner with two sections
+     *          displays the activities on top and functions for modifications on bottom
+     */
     public ActivityPlannerPanel(ActivityPlanner ap) {
         super(JSplitPane.VERTICAL_SPLIT);
         this.ap = ap;
@@ -48,6 +54,10 @@ public class ActivityPlannerPanel extends JSplitPane {
         setResizeWeight(1);
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: updates the display of the activities on top half of the panel
+     */
     public void updateDisplay() {
         displayPanel.removeAll();
         for (int i = 1; i <= ap.getNumActivities(); i++) {
@@ -62,12 +72,20 @@ public class ActivityPlannerPanel extends JSplitPane {
         }
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: initializes the display of the activities (top half of the panel)
+     */
     private void initDisplayPanel() {
         displayPanel = new JPanel();
         displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.Y_AXIS));
         updateDisplay();
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: initializes the display of the functions (bottom half of the panel)
+     */
     private void initButtonPanel() {
         buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridBagLayout());
@@ -94,6 +112,10 @@ public class ActivityPlannerPanel extends JSplitPane {
         buttonPanel.add(activityLabel,gbc);
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: initializes the buttons on the panel
+     */
     private void initButtons() {
         selectActivityBtn = new JButton("Select an activity for modification");
         addActivityBtn = new JButton("create new activity");
@@ -107,6 +129,11 @@ public class ActivityPlannerPanel extends JSplitPane {
         viewBtn = new JButton("view selected activity in detail");
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: sets the activity label to the corresponding activity based on provided index
+     *          sets to none if index is -1 ; adjusts the hasSelected flag respectively
+     */
     public void setActivityLabel(int index) {
         if (index >= 0) {
             selectedIndex = index + 1;

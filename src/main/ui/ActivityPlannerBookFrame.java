@@ -8,11 +8,10 @@ import model.ActivityPlannerBook;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+// Represents the activity planner book GUI
 public class ActivityPlannerBookFrame extends JFrame {
     public static final int WIDTH = 1000;
     public static final int HEIGHT = 500;
@@ -63,11 +62,18 @@ public class ActivityPlannerBookFrame extends JFrame {
     private JComboBox plannerBox;
     private JComboBox activityBox;
 
-
+    /*
+     * MODIFIES: this
+     * EFFECTS: constructs the frame
+     */
     public ActivityPlannerBookFrame() {
         init();
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: initializes the frame
+     */
     private void init() {
         jsonWriter = new JsonWriter(JSON_STORE);
         jsonReader = new JsonReader(JSON_STORE);
@@ -79,6 +85,11 @@ public class ActivityPlannerBookFrame extends JFrame {
         chooseNewOrOld();
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: adds the start panel to the frame and action listener to the buttons
+     *          on the start panel
+     */
     private void chooseNewOrOld() {
         startPanel = new WelcomePanel();
         add(startPanel);
@@ -88,6 +99,10 @@ public class ActivityPlannerBookFrame extends JFrame {
         loadBookBtn.addActionListener(e -> loadBookAction());
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: guides the user to enter the name of the new activity planner book
+     */
     private void newBookWizard() {
         getContentPane().removeAll();
         creationPanel = new CreateNewBookPanel();
@@ -98,6 +113,10 @@ public class ActivityPlannerBookFrame extends JFrame {
         makeBook();
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: loads the previously saved activity planner book
+     */
     private void loadBookAction() {
         try {
             apb = jsonReader.read();
@@ -115,6 +134,10 @@ public class ActivityPlannerBookFrame extends JFrame {
         }
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: creates a brand-new activity planner book
+     */
     private void makeBook() {
         createBookBtn.addActionListener(e -> {
             bookName = grabName.getText();
@@ -131,11 +154,19 @@ public class ActivityPlannerBookFrame extends JFrame {
         });
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: updates the frame
+     */
     private void refresh() {
         repaint();
         revalidate();
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines the buttons of the activity planner book
+     */
     private void runBook() {
         createPlannerBtn = bookPanel.getCreatePlannerBtn();
         changeBookNameBtn = bookPanel.getChangeNameBtn();
@@ -153,41 +184,56 @@ public class ActivityPlannerBookFrame extends JFrame {
         defineQuitAction();
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines the change book name button so user can change the name,
+     *          name will not be changed if input is empty
+     */
     private void defineChangeBookNameAction() {
         changeBookNameBtn.addActionListener(e -> {
             String newBookName = JOptionPane.showInputDialog(null,"Enter the new planner book name");
-            if (newBookName == null) {
-                // do nothing
-            } else if (newBookName.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Name cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(null, "name successfully changed!", "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
-                apb.setPlannerBookName(newBookName);
-                bookPanel.setName(newBookName);
-                refresh();
+            if (newBookName != null) {
+                if (newBookName.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Name cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "name successfully changed!", "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    apb.setPlannerBookName(newBookName);
+                    bookPanel.setName(newBookName);
+                    refresh();
+                }
             }
         });
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines the create planner button;
+     *          success if name is not empty and there is available spot in the planner book
+     *          fail if name is empty or the planner book is full
+     */
     private void defineCreatePlannerAction() {
         createPlannerBtn.addActionListener(e -> {
             String plannerName = JOptionPane.showInputDialog(null,"Enter the name of planner");
-            if (plannerName == null) {
-                // do nothing
-            } else if (plannerName.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Name cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
-            } else if (!apb.hasAvailableSpot()) {
-                JOptionPane.showMessageDialog(null, "Reached maximum number of planners", "Error",
-                        JOptionPane.ERROR_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(null, plannerName + " successfully created!", "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
-                apb.createNewPlanner(plannerName);
+            if (plannerName != null) {
+                if (plannerName.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Name cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
+                } else if (!apb.hasAvailableSpot()) {
+                    JOptionPane.showMessageDialog(null, "Reached maximum number of planners", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, plannerName + " successfully created!", "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    apb.createNewPlanner(plannerName);
+                }
             }
         });
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines choose planner button
+     */
     private void defineChoosePlannerAction() {
         choosePlannerBtn.addActionListener(e -> {
             if (apb.isEmpty()) {
@@ -208,6 +254,10 @@ public class ActivityPlannerBookFrame extends JFrame {
         });
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines delete planner button
+     */
     private void defineDelPlannerAction() {
         delPlannerBtn.addActionListener(e -> {
             if (apb.isEmpty()) {
@@ -231,6 +281,10 @@ public class ActivityPlannerBookFrame extends JFrame {
         });
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines back button, sends user back to start menu
+     */
     private void defineBackAction() {
         backBtn.addActionListener(e -> {
             getContentPane().removeAll();
@@ -239,6 +293,10 @@ public class ActivityPlannerBookFrame extends JFrame {
         });
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines save button, saves the activity planner book to file
+     */
     private void defineSaveAction() {
         saveBtn.addActionListener(e -> {
             try {
@@ -254,6 +312,10 @@ public class ActivityPlannerBookFrame extends JFrame {
         });
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines quit button, exits the application with a double check confirmation
+     */
     private void defineQuitAction() {
         quitBtn.addActionListener(e -> {
             int sign = JOptionPane.showConfirmDialog(null, "Quit","Double Check", JOptionPane.OK_CANCEL_OPTION);
@@ -263,6 +325,10 @@ public class ActivityPlannerBookFrame extends JFrame {
         });
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: sets up the activity planner panel
+     */
     private void goToPlanner(int index) {
         ap = apb.getActivityPlanner(index + 1);
         plannerPanel = new ActivityPlannerPanel(ap);
@@ -273,6 +339,10 @@ public class ActivityPlannerBookFrame extends JFrame {
         runPlanner();
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: helper function that defines the buttons on the planner panel
+     */
     private void runPlanner() {
         selectActivityBtn = plannerPanel.getSelectActivityBtn();
         addActivityBtn = plannerPanel.getAddActivityBtn();
@@ -296,6 +366,10 @@ public class ActivityPlannerBookFrame extends JFrame {
         defineViewBtnAction();
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines select button
+     */
     private void defineSelectBtnAction() {
         selectActivityBtn.addActionListener(e -> {
             if (ap.getNumActivities() > 0) {
@@ -317,6 +391,10 @@ public class ActivityPlannerBookFrame extends JFrame {
         });
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: constructs the helper pane for creating a new activity
+     */
     private JPanel makeCreateActPanel() {
         JPanel panel = new JPanel(new BorderLayout(5, 5));
         panel.setPreferredSize(new Dimension(600, 200));
@@ -338,6 +416,10 @@ public class ActivityPlannerBookFrame extends JFrame {
         return panel;
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: helper function that initializes the five elements needed to create a new activity
+     */
     private void initActElements() {
         brief = new JTextField("");
         detail = new JTextField("");
@@ -348,13 +430,20 @@ public class ActivityPlannerBookFrame extends JFrame {
             day.addItem(d);
         }
         for (int i = 0; i <= 24; i++) {
-            start.addItem(i + ":00");
+            if (i < 24) {
+                start.addItem(i + ":00");
+            }
             if (i > 0) {
                 duration.addItem(i + " hours");
             }
         }
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: checks if the brief description or the detailed description user entered is empty,
+     *          pops out a window with an error message if so.
+     */
     private boolean checkEmptyDescription() {
         if (brief.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "brief description cannot be empty",
@@ -368,6 +457,10 @@ public class ActivityPlannerBookFrame extends JFrame {
         return true;
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines add activity button
+     */
     private void defineAddBtnAction() {
         addActivityBtn.addActionListener(e -> {
             int sign = JOptionPane.showConfirmDialog(null, makeCreateActPanel(),
@@ -390,15 +483,21 @@ public class ActivityPlannerBookFrame extends JFrame {
         });
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines delete activity button
+     */
     private void defineDelBtnAction() {
         delActivityBtn.addActionListener(e -> {
             if (plannerPanel.getHasSelected()) {
-                JOptionPane.showMessageDialog(null, "successfully deleted\n" + ap.getActivity(selectedIndex + 1),
-                        "deletion succeeded", JOptionPane.INFORMATION_MESSAGE);
-                ap.deleteActivity(selectedIndex + 1);
-                plannerPanel.setActivityLabel(-1);
-                plannerPanel.updateDisplay();
-                refresh();
+                if (JOptionPane.showConfirmDialog(null, "Confirm deletion", "Double check", 2) == 0) {
+                    JOptionPane.showMessageDialog(null, "successfully deleted\n" + ap.getActivity(selectedIndex + 1),
+                            "deletion succeeded", JOptionPane.INFORMATION_MESSAGE);
+                    ap.deleteActivity(selectedIndex + 1);
+                    plannerPanel.setActivityLabel(-1);
+                    plannerPanel.updateDisplay();
+                    refresh();
+                }
             } else {
                 JOptionPane.showMessageDialog(null, "Activity selection needed",
                         "deletion failed", JOptionPane.ERROR_MESSAGE);
@@ -406,6 +505,10 @@ public class ActivityPlannerBookFrame extends JFrame {
         });
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines modify brief description button
+     */
     private void defineModBriefAction() {
         modBriefBtn.addActionListener(e -> {
             if (plannerPanel.getHasSelected()) {
@@ -431,6 +534,10 @@ public class ActivityPlannerBookFrame extends JFrame {
         });
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines modify detailed description button
+     */
     private void defineModDetailAction() {
         modDetailedBtn.addActionListener(e -> {
             if (plannerPanel.getHasSelected()) {
@@ -455,6 +562,10 @@ public class ActivityPlannerBookFrame extends JFrame {
         });
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines modify day of occurrence button
+     */
     private void defineModDayAction() {
         modDayBtn.addActionListener(e -> {
             if (plannerPanel.getHasSelected()) {
@@ -481,20 +592,92 @@ public class ActivityPlannerBookFrame extends JFrame {
         });
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines modify start time button
+     */
     private void defineModStartBtnAction() {
         modStartBtn.addActionListener(e -> {
-
+            if (plannerPanel.getHasSelected()) {
+                start = new JComboBox<>();
+                for (int i = 0; i < 24; i++) {
+                    start.addItem(Integer.toString(i));
+                }
+                if (JOptionPane.showConfirmDialog(null, start, "Select new start time", 2) == 0) {
+                    int index = start.getSelectedIndex();
+                    if (ap.setStartTime(selectedIndex + 1, index)) {
+                        JOptionPane.showMessageDialog(null,"New start time: " + index + ":00",
+                                "modification success", JOptionPane.INFORMATION_MESSAGE);
+                        plannerPanel.updateDisplay();
+                        refresh();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Conflict detected", "modification failed",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Activity selection needed",
+                        "modification failed", JOptionPane.ERROR_MESSAGE);
+            }
         });
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines modify duration button
+     */
     private void defineModDurBtnAction() {
-
+        modDurBtn.addActionListener(e -> {
+            if (plannerPanel.getHasSelected()) {
+                duration = new JComboBox<>();
+                for (int i = 1; i <= 24; i++) {
+                    duration.addItem(Integer.toString(i));
+                }
+                if (JOptionPane.showConfirmDialog(null, duration, "Select new duration", 2) == 0) {
+                    int index = duration.getSelectedIndex() + 1;
+                    if (ap.setDuration(selectedIndex + 1, index)) {
+                        JOptionPane.showMessageDialog(null,"New duration: " + index + " hours",
+                                "modification success", JOptionPane.INFORMATION_MESSAGE);
+                        plannerPanel.updateDisplay();
+                        refresh();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Conflict detected", "modification failed",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Activity selection needed",
+                        "modification failed", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines view summary button
+     */
     private void defineViewBtnAction() {
-
+        viewBtn.addActionListener(e -> {
+            if (plannerPanel.getHasSelected()) {
+                Activity activity = ap.getActivity(selectedIndex + 1);
+                String summary = activity.getBriefDescription() + "\n";
+                summary += activity.getDetailedDescription() + "\n";
+                summary += "From " + activity.getStartTime() + ":00";
+                summary += " to " + (activity.getStartTime() + activity.getDuration()) + ":00";
+                summary += " on " + activity.getDay() + "\n";
+                JOptionPane.showMessageDialog(null, summary, "Summary of the selected activity",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Activity selection needed",
+                        "modification failed", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines go to previous menu button
+     */
     private void definePrevAction() {
         previousBtn.addActionListener(e -> {
             getContentPane().removeAll();

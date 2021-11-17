@@ -1,17 +1,20 @@
 package ui;
 
-import model.ActivityPlannerBook;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
+// Represents the welcome panel
 
 public class WelcomePanel extends JPanel {
     private JLabel welcome;
     private JButton newBook;
     private JButton loadBook;
 
+    /*
+     *  MODIFIES: this
+     *  EFFECTS: constructs the welcome panel with grid bag layout
+     */
     public WelcomePanel() {
         welcome = new JLabel("Welcome to Activity Planner Book");
         newBook = new JButton("Create new activity planner book");

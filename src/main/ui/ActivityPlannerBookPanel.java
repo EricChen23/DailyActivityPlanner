@@ -6,8 +6,8 @@ import model.ActivityPlannerBook;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.util.ArrayList;
 
+// Represents the activity planner book panel
 public class ActivityPlannerBookPanel extends JPanel {
     TitledBorder title;
     private JButton createPlannerBtn;
@@ -18,6 +18,10 @@ public class ActivityPlannerBookPanel extends JPanel {
     private JButton backBtn;
     private JButton quitBtn;
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: constructs the panel with buttons related to activity planner book features
+     */
     public ActivityPlannerBookPanel(ActivityPlannerBook apb) {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -39,6 +43,10 @@ public class ActivityPlannerBookPanel extends JPanel {
         add(quitBtn, gbc);
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: initializes the buttons with corresponding features
+     */
     private void initButtons() {
         createPlannerBtn = new JButton("create a new activity planner");
         changeNameBtn = new JButton("change name of this planner book");
@@ -77,6 +85,10 @@ public class ActivityPlannerBookPanel extends JPanel {
         return quitBtn;
     }
 
+    /*
+     * MODIFIES: this
+     * EFFECTS: sets the border to the name of the owner of the activity planner book
+     */
     public void setName(String newName) {
         title.setTitle(newName + "'s Activity Planner Book");
     }
