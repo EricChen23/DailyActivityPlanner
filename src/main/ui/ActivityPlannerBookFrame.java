@@ -81,6 +81,7 @@ public class ActivityPlannerBookFrame extends JFrame {
         setSize(WIDTH, HEIGHT);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
         setVisible(true);
         chooseNewOrOld();
     }
