@@ -47,5 +47,4 @@ public class CreateNewBookPanel extends JPanel {
     public void showEmptyLabel() {
         emptyNameLabel.setVisible(true);
     }
-
 }

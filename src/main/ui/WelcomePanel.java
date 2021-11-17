@@ -3,6 +3,7 @@ package ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 // Represents the welcome panel
 
@@ -17,6 +18,7 @@ public class WelcomePanel extends JPanel {
      */
     public WelcomePanel() {
         welcome = new JLabel("Welcome to Activity Planner Book");
+        welcome.setFont(new Font("Bold", Font.BOLD, 40));
         newBook = new JButton("Create new activity planner book");
         loadBook = new JButton("Load existing activity planner book");
         GridBagLayout gbl = new GridBagLayout();
@@ -27,7 +29,6 @@ public class WelcomePanel extends JPanel {
         gc.gridx = 0;
         gc.gridy = 0;
         setLayout(gbl);
-
         add(welcome, gc);
         gc.gridy = 1;
         add(newBook, gc);
@@ -44,4 +45,10 @@ public class WelcomePanel extends JPanel {
     }
 
 
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        ImageIcon bg = new ImageIcon("./data/book.jpg");
+        g.drawImage(bg.getImage(), 0, 0, null);
+    }
 }
