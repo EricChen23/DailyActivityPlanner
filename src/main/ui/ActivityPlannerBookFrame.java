@@ -303,7 +303,8 @@ public class ActivityPlannerBookFrame extends JFrame {
                 jsonWriter.open();
                 jsonWriter.write(apb);
                 jsonWriter.close();
-                JOptionPane.showMessageDialog(null, apb.getPlannerBookName() + " has been saved to " + JSON_STORE,
+                JOptionPane.showMessageDialog(null,
+                        apb.getPlannerBookName() + "'s planner book has been saved to " + JSON_STORE,
                         "success", JOptionPane.INFORMATION_MESSAGE);
             } catch (FileNotFoundException ffe) {
                 JOptionPane.showMessageDialog(null, "Unable to write to file: " + JSON_STORE, "Error",
@@ -433,7 +434,7 @@ public class ActivityPlannerBookFrame extends JFrame {
      */
     private void defineDurationComboBox() {
         duration = new JComboBox<>();
-        for (int i = 1; i < 24; i++) {
+        for (int i = 1; i <= 24; i++) {
             duration.addItem(Integer.toString(i));
         }
     }
