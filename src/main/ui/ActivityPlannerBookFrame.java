@@ -59,8 +59,8 @@ public class ActivityPlannerBookFrame extends JFrame {
     private JTextField grabName;
     private String bookName;
 
-    private JComboBox plannerBox;
-    private JComboBox activityBox;
+    private JComboBox<String> plannerBox;
+    private JComboBox<String> activityBox;
 
     /*
      * MODIFIES: this
@@ -240,7 +240,7 @@ public class ActivityPlannerBookFrame extends JFrame {
                 JOptionPane.showMessageDialog(null, "There is no existing planners", "Error",
                         JOptionPane.ERROR_MESSAGE);
             } else {
-                plannerBox = new JComboBox();
+                plannerBox = new JComboBox<>();
                 for (int i = 1; i <= apb.getNumPlanners(); i++) {
                     plannerBox.addItem(apb.getPlannerName(i));
                 }
@@ -264,7 +264,7 @@ public class ActivityPlannerBookFrame extends JFrame {
                 JOptionPane.showMessageDialog(null, "There is no existing planners", "Error",
                         JOptionPane.ERROR_MESSAGE);
             } else {
-                plannerBox = new JComboBox();
+                plannerBox = new JComboBox<>();
                 for (int i = 1; i <= apb.getNumPlanners(); i++) {
                     plannerBox.addItem(apb.getPlannerName(i));
                 }
@@ -373,7 +373,7 @@ public class ActivityPlannerBookFrame extends JFrame {
     private void defineSelectBtnAction() {
         selectActivityBtn.addActionListener(e -> {
             if (ap.getNumActivities() > 0) {
-                activityBox = new JComboBox();
+                activityBox = new JComboBox<>();
                 for (int i = 1; i <= ap.getNumActivities(); i++) {
                     activityBox.addItem(ap.getActivityBriefDescription(i));
                 }
@@ -418,6 +418,28 @@ public class ActivityPlannerBookFrame extends JFrame {
 
     /*
      * MODIFIES: this
+     * EFFECTS: defines the start combo box from 0 to 23
+     */
+    private void defineStartComboBox() {
+        start = new JComboBox<>();
+        for (int i = 0; i < 24; i++) {
+            start.addItem(Integer.toString(i));
+        }
+    }
+
+    /*
+     * MODIFIES: this
+     * EFFECTS: defines the duration combo box from 0 to 23
+     */
+    private void defineDurationComboBox() {
+        duration = new JComboBox<>();
+        for (int i = 1; i < 24; i++) {
+            duration.addItem(Integer.toString(i));
+        }
+    }
+
+    /*
+     * MODIFIES: this
      * EFFECTS: helper function that initializes the five elements needed to create a new activity
      */
     private void initActElements() {
@@ -429,14 +451,8 @@ public class ActivityPlannerBookFrame extends JFrame {
         for (Day d : Day.values()) {
             day.addItem(d);
         }
-        for (int i = 0; i <= 24; i++) {
-            if (i < 24) {
-                start.addItem(i + ":00");
-            }
-            if (i > 0) {
-                duration.addItem(i + " hours");
-            }
-        }
+        defineStartComboBox();
+        defineDurationComboBox();
     }
 
     /*
@@ -490,7 +506,8 @@ public class ActivityPlannerBookFrame extends JFrame {
     private void defineDelBtnAction() {
         delActivityBtn.addActionListener(e -> {
             if (plannerPanel.getHasSelected()) {
-                if (JOptionPane.showConfirmDialog(null, "Confirm deletion", "Double check", 2) == 0) {
+                if (JOptionPane.showConfirmDialog(null, "Confirm deletion",
+                        "Double check", JOptionPane.OK_CANCEL_OPTION) == 0) {
                     JOptionPane.showMessageDialog(null, "successfully deleted\n" + ap.getActivity(selectedIndex + 1),
                             "deletion succeeded", JOptionPane.INFORMATION_MESSAGE);
                     ap.deleteActivity(selectedIndex + 1);
@@ -599,11 +616,9 @@ public class ActivityPlannerBookFrame extends JFrame {
     private void defineModStartBtnAction() {
         modStartBtn.addActionListener(e -> {
             if (plannerPanel.getHasSelected()) {
-                start = new JComboBox<>();
-                for (int i = 0; i < 24; i++) {
-                    start.addItem(Integer.toString(i));
-                }
-                if (JOptionPane.showConfirmDialog(null, start, "Select new start time", 2) == 0) {
+                defineStartComboBox();
+                if (JOptionPane.showConfirmDialog(null, start, "Select new start time",
+                        JOptionPane.OK_CANCEL_OPTION) == 0) {
                     int index = start.getSelectedIndex();
                     if (ap.setStartTime(selectedIndex + 1, index)) {
                         JOptionPane.showMessageDialog(null,"New start time: " + index + ":00",
@@ -629,11 +644,9 @@ public class ActivityPlannerBookFrame extends JFrame {
     private void defineModDurBtnAction() {
         modDurBtn.addActionListener(e -> {
             if (plannerPanel.getHasSelected()) {
-                duration = new JComboBox<>();
-                for (int i = 1; i <= 24; i++) {
-                    duration.addItem(Integer.toString(i));
-                }
-                if (JOptionPane.showConfirmDialog(null, duration, "Select new duration", 2) == 0) {
+                defineDurationComboBox();
+                if (JOptionPane.showConfirmDialog(null, duration, "Select new duration",
+                        JOptionPane.OK_CANCEL_OPTION) == 0) {
                     int index = duration.getSelectedIndex() + 1;
                     if (ap.setDuration(selectedIndex + 1, index)) {
                         JOptionPane.showMessageDialog(null,"New duration: " + index + " hours",
