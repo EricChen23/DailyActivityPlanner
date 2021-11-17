@@ -1,30 +1,35 @@
 package ui;
 
+import model.Activity;
+import model.ActivityPlanner;
+import model.Day;
 import persistence.*;
 import model.ActivityPlannerBook;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class ActivityPlannerBookFrame extends JFrame {
-    private static final int WIDTH = 1000;
-    private static final int HEIGHT = 1000;
+    public static final int WIDTH = 1000;
+    public static final int HEIGHT = 500;
 
     private static final String JSON_STORE = "./data/activityplannerbook.json";
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
 
     private ActivityPlannerBook apb;
+    private ActivityPlanner ap;
+    private int selectedIndex;
+
     private WelcomePanel startPanel;
     private CreateNewBookPanel creationPanel;
-    private ActivityPlannerBookPanel book;
-    private ActivityPlannerPanel planner;
+    private ActivityPlannerBookPanel bookPanel;
+    private ActivityPlannerPanel plannerPanel;
 
-    private JButton newBookBtn;
-    private JButton loadBookBtn;
     private JButton createBookBtn;
 
     private JButton createPlannerBtn;
@@ -35,10 +40,28 @@ public class ActivityPlannerBookFrame extends JFrame {
     private JButton backBtn;
     private JButton quitBtn;
 
+    private JTextField brief;
+    private JTextField detail;
+    private JComboBox<Day> day;
+    private JComboBox<String> start;
+    private JComboBox<String> duration;
+
+    private JButton selectActivityBtn;
+    private JButton addActivityBtn;
+    private JButton delActivityBtn;
+    private JButton modBriefBtn;
+    private JButton modDetailedBtn;
+    private JButton modDayBtn;
+    private JButton modStartBtn;
+    private JButton modDurBtn;
+    private JButton previousBtn;
+    private JButton viewBtn;
+
     private JTextField grabName;
     private String bookName;
 
     private JComboBox plannerBox;
+    private JComboBox activityBox;
 
 
     public ActivityPlannerBookFrame() {
@@ -59,20 +82,10 @@ public class ActivityPlannerBookFrame extends JFrame {
     private void chooseNewOrOld() {
         startPanel = new WelcomePanel();
         add(startPanel);
-        newBookBtn = startPanel.getNewBook();
-        loadBookBtn = startPanel.getLoadBook();
-        newBookBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                newBookWizard();
-            }
-        });
-        loadBookBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                loadBookAction();
-            }
-        });
+        JButton newBookBtn = startPanel.getNewBook();
+        JButton loadBookBtn = startPanel.getLoadBook();
+        newBookBtn.addActionListener(e -> newBookWizard());
+        loadBookBtn.addActionListener(e -> loadBookAction());
     }
 
     private void newBookWizard() {
@@ -91,9 +104,9 @@ public class ActivityPlannerBookFrame extends JFrame {
             String bookOwner = apb.getPlannerBookName();
             JOptionPane.showMessageDialog(null, "Loaded " + bookOwner + "'s planner book from " + JSON_STORE,
                     "success", JOptionPane.INFORMATION_MESSAGE);
-            book = new ActivityPlannerBookPanel(apb);
+            bookPanel = new ActivityPlannerBookPanel(apb);
             getContentPane().removeAll();
-            add(book);
+            add(bookPanel);
             refresh();
             runBook();
         } catch (IOException e) {
@@ -103,20 +116,17 @@ public class ActivityPlannerBookFrame extends JFrame {
     }
 
     private void makeBook() {
-        createBookBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                bookName = grabName.getText();
-                if (bookName.isEmpty()) {
-                    creationPanel.showEmptyLabel();
-                } else {
-                    apb = new ActivityPlannerBook(bookName);
-                    getContentPane().removeAll();
-                    book = new ActivityPlannerBookPanel(apb);
-                    add(book);
-                    refresh();
-                    runBook();
-                }
+        createBookBtn.addActionListener(e -> {
+            bookName = grabName.getText();
+            if (bookName.isEmpty()) {
+                creationPanel.showEmptyLabel();
+            } else {
+                apb = new ActivityPlannerBook(bookName);
+                getContentPane().removeAll();
+                bookPanel = new ActivityPlannerBookPanel(apb);
+                add(bookPanel);
+                refresh();
+                runBook();
             }
         });
     }
@@ -127,13 +137,13 @@ public class ActivityPlannerBookFrame extends JFrame {
     }
 
     private void runBook() {
-        createPlannerBtn = book.getCreatePlannerBtn();
-        changeBookNameBtn = book.getChangeNameBtn();
-        choosePlannerBtn = book.getChoosePlannerBtn();
-        delPlannerBtn = book.getDelPlannerBtn();
-        saveBtn = book.getSaveBtn();
-        backBtn = book.getBackBtn();
-        quitBtn = book.getQuitBtn();
+        createPlannerBtn = bookPanel.getCreatePlannerBtn();
+        changeBookNameBtn = bookPanel.getChangeNameBtn();
+        choosePlannerBtn = bookPanel.getChoosePlannerBtn();
+        delPlannerBtn = bookPanel.getDelPlannerBtn();
+        saveBtn = bookPanel.getSaveBtn();
+        backBtn = bookPanel.getBackBtn();
+        quitBtn = bookPanel.getQuitBtn();
         defineChangeBookNameAction();
         defineCreatePlannerAction();
         defineChoosePlannerAction();
@@ -144,143 +154,353 @@ public class ActivityPlannerBookFrame extends JFrame {
     }
 
     private void defineChangeBookNameAction() {
-        changeBookNameBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String newBookName = JOptionPane.showInputDialog(null,"Enter the new planner book name");
-                if (newBookName == null) {
-                    // do nothing
-                } else if (newBookName.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Name cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(null, "name successfully changed!", "Success",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    apb.setPlannerBookName(newBookName);
-                    book.setName(newBookName);
-                    refresh();
-                }
+        changeBookNameBtn.addActionListener(e -> {
+            String newBookName = JOptionPane.showInputDialog(null,"Enter the new planner book name");
+            if (newBookName == null) {
+                // do nothing
+            } else if (newBookName.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Name cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "name successfully changed!", "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+                apb.setPlannerBookName(newBookName);
+                bookPanel.setName(newBookName);
+                refresh();
             }
         });
     }
 
     private void defineCreatePlannerAction() {
-        createPlannerBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String plannerName = JOptionPane.showInputDialog(null,"Enter the name of planner");
-                if (plannerName == null) {
-                    // do nothing
-                } else if (plannerName.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Name cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
-                } else if (!apb.hasAvailableSpot()) {
-                    JOptionPane.showMessageDialog(null, "Reached maximum number of planners", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(null, plannerName + " successfully created!", "Success",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    apb.createNewPlanner(plannerName);
-                }
+        createPlannerBtn.addActionListener(e -> {
+            String plannerName = JOptionPane.showInputDialog(null,"Enter the name of planner");
+            if (plannerName == null) {
+                // do nothing
+            } else if (plannerName.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Name cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
+            } else if (!apb.hasAvailableSpot()) {
+                JOptionPane.showMessageDialog(null, "Reached maximum number of planners", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, plannerName + " successfully created!", "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+                apb.createNewPlanner(plannerName);
             }
         });
     }
 
     private void defineChoosePlannerAction() {
-        choosePlannerBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (apb.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "There is no existing planners", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                } else {
-                    plannerBox = new JComboBox();
-                    for (int i = 1; i <= apb.getNumPlanners(); i++) {
-                        plannerBox.addItem(apb.getPlannerName(i));
-                    }
-                    int sign = JOptionPane.showConfirmDialog(null, plannerBox, "Planner", JOptionPane.OK_CANCEL_OPTION);
-                    if (sign == 0) {
-                        int index = plannerBox.getSelectedIndex();
-                        goToPlanner(index);
-                    }
+        choosePlannerBtn.addActionListener(e -> {
+            if (apb.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "There is no existing planners", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            } else {
+                plannerBox = new JComboBox();
+                for (int i = 1; i <= apb.getNumPlanners(); i++) {
+                    plannerBox.addItem(apb.getPlannerName(i));
+                }
+                int sign = JOptionPane.showConfirmDialog(null, plannerBox, "Select a planner",
+                        JOptionPane.OK_CANCEL_OPTION);
+                if (sign == 0) {
+                    int index = plannerBox.getSelectedIndex();
+                    goToPlanner(index);
                 }
             }
         });
     }
 
     private void defineDelPlannerAction() {
-        delPlannerBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (apb.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "There is no existing planners", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                } else {
-                    plannerBox = new JComboBox();
-                    for (int i = 1; i <= apb.getNumPlanners(); i++) {
-                        plannerBox.addItem(apb.getPlannerName(i));
-                    }
-                    int sign = JOptionPane.showConfirmDialog(null, plannerBox, "Planner", JOptionPane.OK_CANCEL_OPTION);
-                    if (sign == 0) {
-                        int index = plannerBox.getSelectedIndex();
-                        String plannerName = apb.getPlannerName(index + 1);
-                        apb.deletePlanner(index + 1);
-                        JOptionPane.showMessageDialog(null, plannerName + " successfully deleted!", "Success",
-                                JOptionPane.INFORMATION_MESSAGE);
-                    }
+        delPlannerBtn.addActionListener(e -> {
+            if (apb.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "There is no existing planners", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            } else {
+                plannerBox = new JComboBox();
+                for (int i = 1; i <= apb.getNumPlanners(); i++) {
+                    plannerBox.addItem(apb.getPlannerName(i));
+                }
+                int sign = JOptionPane.showConfirmDialog(null, plannerBox, "Select a planner",
+                        JOptionPane.OK_CANCEL_OPTION);
+                if (sign == 0) {
+                    int index = plannerBox.getSelectedIndex();
+                    String plannerName = apb.getPlannerName(index + 1);
+                    apb.deletePlanner(index + 1);
+                    JOptionPane.showMessageDialog(null, plannerName + " successfully deleted!", "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         });
     }
 
     private void defineBackAction() {
-        backBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                getContentPane().removeAll();
-                add(startPanel);
-                refresh();
-            }
+        backBtn.addActionListener(e -> {
+            getContentPane().removeAll();
+            add(startPanel);
+            refresh();
         });
     }
 
     private void defineSaveAction() {
-        saveBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    jsonWriter.open();
-                    jsonWriter.write(apb);
-                    jsonWriter.close();
-                    JOptionPane.showMessageDialog(null, apb.getPlannerBookName() + " has been saved to " + JSON_STORE,
-                            "success", JOptionPane.INFORMATION_MESSAGE);
-                } catch (FileNotFoundException ffe) {
-                    JOptionPane.showMessageDialog(null, "Unable to write to file: " + JSON_STORE, "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                }
+        saveBtn.addActionListener(e -> {
+            try {
+                jsonWriter.open();
+                jsonWriter.write(apb);
+                jsonWriter.close();
+                JOptionPane.showMessageDialog(null, apb.getPlannerBookName() + " has been saved to " + JSON_STORE,
+                        "success", JOptionPane.INFORMATION_MESSAGE);
+            } catch (FileNotFoundException ffe) {
+                JOptionPane.showMessageDialog(null, "Unable to write to file: " + JSON_STORE, "Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
     }
 
     private void defineQuitAction() {
-        quitBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int sign = JOptionPane.showConfirmDialog(null, "Quit","Double Check", JOptionPane.OK_CANCEL_OPTION);
-                if (sign == 0) {
-                    System.exit(0);
-                }
+        quitBtn.addActionListener(e -> {
+            int sign = JOptionPane.showConfirmDialog(null, "Quit","Double Check", JOptionPane.OK_CANCEL_OPTION);
+            if (sign == 0) {
+                System.exit(0);
             }
         });
     }
 
     private void goToPlanner(int index) {
-        planner = new ActivityPlannerPanel(apb.getActivityPlanner(index + 1));
+        ap = apb.getActivityPlanner(index + 1);
+        plannerPanel = new ActivityPlannerPanel(ap);
         getContentPane().removeAll();
-        add(planner);
+        add(plannerPanel);
+        setTitle(ap.getName());
         refresh();
         runPlanner();
     }
 
     private void runPlanner() {
+        selectActivityBtn = plannerPanel.getSelectActivityBtn();
+        addActivityBtn = plannerPanel.getAddActivityBtn();
+        delActivityBtn = plannerPanel.getDelActivityBtn();
+        modBriefBtn = plannerPanel.getModBriefBtn();
+        modDetailedBtn = plannerPanel.getModDetailedBtn();
+        modDayBtn = plannerPanel.getModDayBtn();
+        modStartBtn = plannerPanel.getModStartBtn();
+        modDurBtn = plannerPanel.getModDurBtn();
+        previousBtn = plannerPanel.getBackBtn();
+        viewBtn = plannerPanel.getViewBtn();
+        defineSelectBtnAction();
+        defineAddBtnAction();
+        defineDelBtnAction();
+        defineModBriefAction();
+        defineModDetailAction();
+        defineModDayAction();
+        defineModStartBtnAction();
+        defineModDurBtnAction();
+        definePrevAction();
+        defineViewBtnAction();
+    }
 
+    private void defineSelectBtnAction() {
+        selectActivityBtn.addActionListener(e -> {
+            if (ap.getNumActivities() > 0) {
+                activityBox = new JComboBox();
+                for (int i = 1; i <= ap.getNumActivities(); i++) {
+                    activityBox.addItem(ap.getActivityBriefDescription(i));
+                }
+                int sign = JOptionPane.showConfirmDialog(null, activityBox, "Select an activity",
+                        JOptionPane.OK_CANCEL_OPTION);
+                if (sign == 0) {
+                    int index = activityBox.getSelectedIndex();
+                    selectedIndex = index;
+                    plannerPanel.setActivityLabel(index);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "There is no activities",
+                        "selection failed", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    }
+
+    private JPanel makeCreateActPanel() {
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+        panel.setPreferredSize(new Dimension(600, 200));
+        JPanel labels = new JPanel(new GridLayout(0,1,2,2));
+        labels.add(new JLabel("Brief Description", SwingConstants.TRAILING));
+        labels.add(new JLabel("Detailed Description", SwingConstants.TRAILING));
+        labels.add(new JLabel("Day", SwingConstants.TRAILING));
+        labels.add(new JLabel("Start time", SwingConstants.TRAILING));
+        labels.add(new JLabel("Duration", SwingConstants.TRAILING));
+        panel.add(labels, BorderLayout.LINE_START);
+        JPanel inputPanel = new JPanel(new GridLayout(0,1,2,2));
+        initActElements();
+        inputPanel.add(brief);
+        inputPanel.add(detail);
+        inputPanel.add(day);
+        inputPanel.add(start);
+        inputPanel.add(duration);
+        panel.add(inputPanel);
+        return panel;
+    }
+
+    private void initActElements() {
+        brief = new JTextField("");
+        detail = new JTextField("");
+        day = new JComboBox<>();
+        start = new JComboBox<>();
+        duration = new JComboBox<>();
+        for (Day d : Day.values()) {
+            day.addItem(d);
+        }
+        for (int i = 0; i <= 24; i++) {
+            start.addItem(i + ":00");
+            if (i > 0) {
+                duration.addItem(i + " hours");
+            }
+        }
+    }
+
+    private boolean checkEmptyDescription() {
+        if (brief.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "brief description cannot be empty",
+                    "Creation failed", JOptionPane.ERROR_MESSAGE);
+            return false;
+        } else if (detail.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "detailed description cannot be empty",
+                    "Creation failed", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
+    private void defineAddBtnAction() {
+        addActivityBtn.addActionListener(e -> {
+            int sign = JOptionPane.showConfirmDialog(null, makeCreateActPanel(),
+                    "Create new activity", JOptionPane.OK_CANCEL_OPTION);
+            if (sign == 0) {
+                if (checkEmptyDescription()) {
+                    if (ap.addActivity(new Activity(brief.getText(), detail.getText(),
+                            Day.values()[day.getSelectedIndex()],
+                            start.getSelectedIndex(), duration.getSelectedIndex() + 1))) {
+                        JOptionPane.showMessageDialog(null, "successfully created",
+                                "success", JOptionPane.INFORMATION_MESSAGE);
+                        plannerPanel.updateDisplay();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "conflict detected, creation failed",
+                                "creation failed", JOptionPane.ERROR_MESSAGE);
+                    }
+                    refresh();
+                }
+            }
+        });
+    }
+
+    private void defineDelBtnAction() {
+        delActivityBtn.addActionListener(e -> {
+            if (plannerPanel.getHasSelected()) {
+                JOptionPane.showMessageDialog(null, "successfully deleted\n" + ap.getActivity(selectedIndex + 1),
+                        "deletion succeeded", JOptionPane.INFORMATION_MESSAGE);
+                ap.deleteActivity(selectedIndex + 1);
+                plannerPanel.setActivityLabel(-1);
+                plannerPanel.updateDisplay();
+                refresh();
+            } else {
+                JOptionPane.showMessageDialog(null, "Activity selection needed",
+                        "deletion failed", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    }
+
+    private void defineModBriefAction() {
+        modBriefBtn.addActionListener(e -> {
+            if (plannerPanel.getHasSelected()) {
+                String newBrief = JOptionPane.showInputDialog(null, "Enter new brief description");
+                if (newBrief != null) {
+                    if (newBrief.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "brief description cannot be empty\n",
+                                "update failed", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        ap.getActivity(selectedIndex + 1).setBriefDescription(newBrief);
+                        JOptionPane.showMessageDialog(null,
+                                "successfully updated\n" + ap.getActivity(selectedIndex + 1),
+                                "brief description updated", JOptionPane.INFORMATION_MESSAGE);
+                        plannerPanel.updateDisplay();
+                        plannerPanel.setActivityLabel(selectedIndex);
+                        refresh();
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Activity selection needed",
+                        "modification failed", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    }
+
+    private void defineModDetailAction() {
+        modDetailedBtn.addActionListener(e -> {
+            if (plannerPanel.getHasSelected()) {
+                String newDetailed = JOptionPane.showInputDialog(null, "Enter new detailed description");
+                if (newDetailed != null) {
+                    if (newDetailed.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "detailed description cannot be empty\n",
+                                "update failed", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        ap.getActivity(selectedIndex + 1).setDetailedDescription(newDetailed);
+                        JOptionPane.showMessageDialog(null,
+                                "successfully updated\n" + ap.getActivity(selectedIndex + 1),
+                                "detailed description updated", JOptionPane.INFORMATION_MESSAGE);
+                        plannerPanel.updateDisplay();
+                        refresh();
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Activity selection needed",
+                        "modification failed", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    }
+
+    private void defineModDayAction() {
+        modDayBtn.addActionListener(e -> {
+            if (plannerPanel.getHasSelected()) {
+                day = new JComboBox<>();
+                for (Day d : Day.values()) {
+                    day.addItem(d);
+                }
+                if (JOptionPane.showConfirmDialog(null, day, "Select new day", JOptionPane.OK_CANCEL_OPTION) == 0) {
+                    int index = day.getSelectedIndex();
+                    if (ap.setActivityDay(selectedIndex + 1, Day.values()[index])) {
+                        JOptionPane.showMessageDialog(null,"New day: " + Day.values()[index],
+                                "modification success", JOptionPane.INFORMATION_MESSAGE);
+                        plannerPanel.updateDisplay();
+                        refresh();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Conflict detected", "modification failed",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Activity selection needed",
+                        "modification failed", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+    }
+
+    private void defineModStartBtnAction() {
+        modStartBtn.addActionListener(e -> {
+
+        });
+    }
+
+    private void defineModDurBtnAction() {
+
+    }
+
+    private void defineViewBtnAction() {
+
+    }
+
+    private void definePrevAction() {
+        previousBtn.addActionListener(e -> {
+            getContentPane().removeAll();
+            add(bookPanel);
+            setTitle("Activity Planner Book");
+            refresh();
+        });
     }
 }
