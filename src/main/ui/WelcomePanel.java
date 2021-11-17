@@ -44,7 +44,10 @@ public class WelcomePanel extends JPanel {
         return loadBook;
     }
 
-
+    /*
+     * MODIFIES: this
+     * EFFECTS: adds a background image on this panel
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
