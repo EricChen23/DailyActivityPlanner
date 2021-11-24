@@ -24,16 +24,19 @@ organize their lives better.
 
 ### Phase 4: Task 2
 Tue Nov 23 17:24:03 PST 2021  
-3213 added to 213
+bench press added to workout
 
 Tue Nov 23 17:24:03 PST 2021  
-3213213 added to 213
+sit-ups added to workout
 
 Tue Nov 23 17:24:03 PST 2021  
-213 added to activity planner book
+workout added to activity planner book
 
 Tue Nov 23 17:24:03 PST 2021  
-312321 added to activity planner book
+schoolwork added to activity planner book
 
 Tue Nov 23 17:24:03 PST 2021  
-12321321 added to activity planner book
+vacation added to activity planner book  
+
+### Phase 4: Task 3
+I think my overall design is decent and reasonable. If I had more time, I would create more panels for the ActivityPlannerBookFrame for better visual representation of supported features.
