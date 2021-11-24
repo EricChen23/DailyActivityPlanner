@@ -88,6 +88,7 @@ public class ActivityPlannerBook implements Writable {
         ActivityPlanner newPlanner = new ActivityPlanner(plannerName);
         activityPlanners.add(newPlanner);
         numPlanners++;
+        EventLog.getInstance().logEvent(new Event(plannerName + " added to activity planner book"));
     }
 
     /*
@@ -106,6 +107,8 @@ public class ActivityPlannerBook implements Writable {
      */
     public void deletePlanner(int plannerNumber) {
         int index = plannerNumber - 1;
+        EventLog.getInstance().logEvent(new Event(activityPlanners.get(index).getName()
+                    + " removed from activity planner book"));
         activityPlanners.remove(index);
         numPlanners--;
     }
@@ -136,6 +139,7 @@ public class ActivityPlannerBook implements Writable {
     public void loadActivityPlanner(ActivityPlanner ap) {
         numPlanners++;
         activityPlanners.add(ap);
+        EventLog.getInstance().logEvent(new Event(ap.getName() + " added to activity planner book"));
     }
 
 

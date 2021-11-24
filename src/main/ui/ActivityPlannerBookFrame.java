@@ -1,10 +1,7 @@
 package ui;
 
-import model.Activity;
-import model.ActivityPlanner;
-import model.Day;
+import model.*;
 import persistence.*;
-import model.ActivityPlannerBook;
 
 import javax.swing.*;
 import java.awt.*;
@@ -322,6 +319,9 @@ public class ActivityPlannerBookFrame extends JFrame {
         quitBtn.addActionListener(e -> {
             int sign = JOptionPane.showConfirmDialog(null, "Quit","Double Check", JOptionPane.OK_CANCEL_OPTION);
             if (sign == 0) {
+                for (model.Event next: EventLog.getInstance()) {
+                    System.out.println(next.toString() + "\n");
+                }
                 System.exit(0);
             }
         });

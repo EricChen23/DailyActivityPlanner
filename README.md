@@ -21,3 +21,19 @@ organize their lives better.
 - As a user, I want to be able to create several daily activity planners
 - As a user, I want to be able to save my modified daily planner to file so that I can work on it some other time
 - As a user, I want to be able to load my daily planner from file when I start the application and resume exactly where they left off at some earlier time
+
+### Phase 4: Task 2
+Tue Nov 23 17:24:03 PST 2021  
+3213 added to 213
+
+Tue Nov 23 17:24:03 PST 2021  
+3213213 added to 213
+
+Tue Nov 23 17:24:03 PST 2021  
+213 added to activity planner book
+
+Tue Nov 23 17:24:03 PST 2021  
+312321 added to activity planner book
+
+Tue Nov 23 17:24:03 PST 2021  
+12321321 added to activity planner book

@@ -78,6 +78,7 @@ public class ActivityPlanner implements Writable {
             int insertIndex = findInsertIndex(newActivity);
             activities.add(insertIndex, newActivity);
             numActivities++;
+            EventLog.getInstance().logEvent(new Event(newActivity.getBriefDescription() + " added to " + name));
             return true;
         } else {
             return false;
@@ -162,6 +163,8 @@ public class ActivityPlanner implements Writable {
      */
     public void deleteActivity(int activityNumber) {
         int activityIndex = activityNumber - 1;
+        EventLog.getInstance().logEvent(new Event(activities.get(activityIndex).getBriefDescription()
+                + " removed from " + name));
         activities.remove(activityIndex);
         numActivities--;
     }
